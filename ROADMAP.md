@@ -67,11 +67,11 @@ Four milestones, all closed same day.
 |---|---|---|---|
 | CHANGELOG | schlussel, schloss, kuvert | [schlussel#27](https://github.com/zudaR107/schlussel/issues/27) · [schloss#25](https://github.com/zudaR107/schloss/issues/25) · [kuvert#43](https://github.com/zudaR107/kuvert/issues/43) | **done** (merged: [schlussel#32](https://github.com/zudaR107/schlussel/pull/32), [schloss#30](https://github.com/zudaR107/schloss/pull/30), [kuvert#46](https://github.com/zudaR107/kuvert/pull/46)) |
 | Auth flow hardening | schlussel, schloss | [schlussel#28](https://github.com/zudaR107/schlussel/issues/28) · [schlussel#29](https://github.com/zudaR107/schlussel/issues/29) · [schloss#26](https://github.com/zudaR107/schloss/issues/26) | **done** (merged: [schlussel#33](https://github.com/zudaR107/schlussel/pull/33), [schlussel#35](https://github.com/zudaR107/schlussel/pull/35), [schloss#31](https://github.com/zudaR107/schloss/pull/31)) — login/register unreachable by direct URL, always redirect after auth, password confirm + show/hide toggle, home page now requires auth |
-| Single-entry gateway | Tor (new repo), schlussel, schloss, kuvert | [Tor#1](https://github.com/zudaR107/Tor/issues/1) · [schlussel#30](https://github.com/zudaR107/schlussel/issues/30) · [schloss#27](https://github.com/zudaR107/schloss/issues/27) · [kuvert#44](https://github.com/zudaR107/kuvert/issues/44) | **done and verified with a real multi-container run** (Tor bootstrapped directly on `main` - one-time exception, empty repo had no PR base yet; merged: [schlussel#34](https://github.com/zudaR107/schlussel/pull/34), [schloss#32](https://github.com/zudaR107/schloss/pull/32), [kuvert#47](https://github.com/zudaR107/kuvert/pull/47)) — subdomain-routing Caddy gateway (`localhost`/`auth.localhost`/`kuvert.localhost`), one `docker compose up` from `Tor/` starts everything via `include:`, no other container publishes a host port anymore |
+| Single-entry gateway | tor (new repo, originally created as `Tor` - see the rename entry below), schlussel, schloss, kuvert | [tor#1](https://github.com/zudaR107/tor/issues/1) · [schlussel#30](https://github.com/zudaR107/schlussel/issues/30) · [schloss#27](https://github.com/zudaR107/schloss/issues/27) · [kuvert#44](https://github.com/zudaR107/kuvert/issues/44) | **done and verified with a real multi-container run** (tor bootstrapped directly on `main` - one-time exception, empty repo had no PR base yet; merged: [schlussel#34](https://github.com/zudaR107/schlussel/pull/34), [schloss#32](https://github.com/zudaR107/schloss/pull/32), [kuvert#47](https://github.com/zudaR107/kuvert/pull/47)) — subdomain-routing Caddy gateway (`localhost`/`auth.localhost`/`kuvert.localhost`), one `docker compose up` from `tor/` starts everything via `include:`, no other container publishes a host port anymore |
 | Branding polish | schlussel, schloss, kuvert | [schlussel#31](https://github.com/zudaR107/schlussel/issues/31) (closed, already satisfied) · [schloss#28](https://github.com/zudaR107/schloss/issues/28) · [schloss#29](https://github.com/zudaR107/schloss/issues/29) · [kuvert#45](https://github.com/zudaR107/kuvert/issues/45) | **done** (merged: [schloss#33](https://github.com/zudaR107/schloss/pull/33), [schloss#34](https://github.com/zudaR107/schloss/pull/34), [kuvert#48](https://github.com/zudaR107/kuvert/pull/48)) — distinct Kuvert favicon + tab title fix, Schloss tab title, homepage hero/highlights/GitHub-link polish |
 
 Note: switching from the old standalone per-service `docker compose up` to
-running through Tor starts fresh named volumes (`schlussel-data`,
+running through tor starts fresh named volumes (`schlussel-data`,
 `kuvert-data`) the first time - any account/data created before this batch
 landed won't be visible until re-created against the new setup.
 
@@ -79,11 +79,11 @@ landed won't be visible until re-created against the new setup.
 
 Full context: `/home/zudar/.claude/plans/inherited-exploring-russell.md`.
 
-- The gateway repo was renamed `Tor` → `tor` (GitHub redirects the old URL;
-  local dir and remote updated to match). All references elsewhere fixed
-  to the lowercase slug — prose usage of the project name ("Tor" as a
-  proper noun) stays capitalized, same convention as Schlüssel/Schloss/
-  Kuvert.
+- The gateway repo's slug was renamed to lowercase `tor` (GitHub redirects
+  the old URL; local dir and remote updated to match). Unlike
+  Schlüssel/Schloss/Kuvert, the user wants this project name written
+  lowercase everywhere, including prose and sentence starts, not just the
+  URL/slug — fixed across all four service repos and this one.
 - New repo [`Hof`](https://github.com/zudaR107/Hof) — a meta-repo (this
   directory, converted in place) holding only docs (`ROADMAP.md`,
   `docs/stages/`) and git submodules pinning the four service repos.

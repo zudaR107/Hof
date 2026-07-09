@@ -12,5 +12,7 @@ submodule's own `CHANGELOG.md` for that).
 ## Submodule bumps
 - Bumped all four submodules to their open-source presentation polish
   commits (license/CI badges, per-repo GitHub descriptions and topics,
-  Tor->tor URL fixes after the gateway repo's rename, and
+  gateway repo URL fixes after its rename to lowercase, and
   `.env.production.example` in tor).
+- Bumped all four submodules again: the gateway's project name is now
+  written lowercase ("tor") everywhere in prose, not just in URLs/slugs.
