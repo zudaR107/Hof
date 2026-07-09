@@ -101,6 +101,42 @@ Full context: `/home/zudar/.claude/plans/inherited-exploring-russell.md`.
   `.env.production.example` for real-domain deployment and a missing
   `.gitignore`).
 
+## Authorization Code + PKCE (2026-07-09)
+
+Full design: `/home/zudar/.claude/plans/inherited-exploring-russell.md`.
+Replaces the old "token in URL fragment" login handoff with OAuth2
+Authorization Code + PKCE, so the access token no longer travels through
+any URL at all. Milestone "Authorization Code flow (PKCE)"
+(schlussel, schloss, kuvert), all closed same day:
+
+- **schlussel** (API + web, one PR — tightly coupled): new `auth_codes`
+  table; `POST /auth/login` optionally accepts a PKCE `codeChallenge` and,
+  when given, issues a 60s single-use code instead of a token; new
+  `POST /auth/token` exchanges the code + verifier for the real
+  `{accessToken, user}`. LoginPage/RegisterPage now require a
+  `code_challenge` alongside `return_to` to render, and redirect with
+  `?code=` instead of `#token=`. Merged:
+  [schlussel#41](https://github.com/zudaR107/schlussel/pull/41) — this PR
+  also fixed a real bug the independent test-writing agent found: the
+  cross-navigation links between the login/register pages only forwarded
+  `return_to`, silently dropping `code_challenge` and breaking the other
+  page's guard mid-flow.
+- **schloss** and **kuvert**: `buildSchluesselLoginUrl` is now `async` —
+  generates a PKCE verifier, stores it in `sessionStorage`, sends its
+  challenge alongside `return_to`. `AuthCallbackPage` exchanges the
+  returned code (from the query string) for the token via
+  `POST /auth/token`, which now returns `{accessToken, user}` in one
+  response — no more separate `/auth/me` call needed. Merged:
+  [schloss#40](https://github.com/zudaR107/schloss/pull/40),
+  [kuvert#54](https://github.com/zudaR107/kuvert/pull/54).
+- **Verified live**, end-to-end, against the real running Docker stack
+  (not just unit tests) by a dedicated verification agent: full round
+  trip, the resulting token accepted by kuvert-api via independent JWKS
+  verification, single-use enforcement, verifier-binding (wrong verifier
+  rejected), code expiry (60s) enforced, and malformed/half-supplied PKCE
+  params hard-rejected rather than silently downgraded to a plain login.
+  No gaps found.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

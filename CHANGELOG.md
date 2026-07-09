@@ -16,3 +16,6 @@ submodule's own `CHANGELOG.md` for that).
   `.env.production.example` in tor).
 - Bumped all four submodules again: the gateway's project name is now
   written lowercase ("tor") everywhere in prose, not just in URLs/slugs.
+- Bumped schlussel/schloss/kuvert to their Authorization Code + PKCE
+  commits - the login handoff no longer puts the access token in a URL.
+  Verified live end-to-end against the real running stack.
