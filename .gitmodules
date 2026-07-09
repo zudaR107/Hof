@@ -1,0 +1,12 @@
+[submodule "schlussel"]
+	path = schlussel
+	url = git@github.com:zudaR107/schlussel.git
+[submodule "schloss"]
+	path = schloss
+	url = git@github.com:zudaR107/schloss.git
+[submodule "kuvert"]
+	path = kuvert
+	url = git@github.com:zudaR107/kuvert.git
+[submodule "tor"]
+	path = tor
+	url = git@github.com:zudaR107/tor.git
