@@ -8,22 +8,27 @@ on disk).
 Full background/rationale: see the plan this was generated from, or ask
 Claude to re-read `docs/stages/*.md` — each stage file is self-contained.
 
-## GitHub setup (as of 2026-07-07)
+## GitHub setup (as of 2026-07-09)
 
-- All three repos are **public** under `zudaR107`.
-- `main` is protected via a repository ruleset: PR required (0 approvals
-  needed), no force-push, no branch deletion, **no bypass for anyone**
-  including the owner. Direct push to `main` is impossible.
+- All five repos (`schlussel`, `schloss`, `kuvert`, `tor`, `Hof`) are
+  **public** under `zudaR107`.
+- `main` is protected via a repository ruleset on the four service repos
+  (`schlussel`/`schloss`/`kuvert`/`tor`): PR required (0 approvals needed),
+  no force-push, no branch deletion, **no bypass for anyone** including the
+  owner. Direct push to `main` is impossible there. `Hof` deliberately has
+  **no** ruleset — see its own entry in "Rename, meta-repo, and OSS polish"
+  below.
 - Labels: `type:feat`, `type:fix`, `type:chore`, `type:test`, `type:docs`
-  (same in all three repos).
-- Milestones: one per stage, created in each repo the stage touches — see
-  the table below for issue links, which show the milestone too.
+  (same in the four service repos; `Hof` has none, no PR pipeline there).
+- Milestones: one per stage/batch, created in each repo it touches — see
+  the tables below for issue links, which show the milestone too.
 - Project board: [`Schloss Platform`](https://github.com/users/zudaR107/projects/2)
-  (user project under zudaR107) — all open stage issues added.
-- CI currently covers tests only. Stages 9-11 (added 2026-07-07, after
-  Stage 1 shipped) extend this to lint, Docker image publishing to GHCR,
-  and Dependabot — see the table below.
-- Git identity for these three repos (local config, not global):
+  (user project under zudaR107) — all open issues from the four service
+  repos added (`Hof` doesn't use issues).
+- CI covers tests, lint, and Docker image publishing to GHCR (`tor` also
+  validates its Caddyfile and the full multi-repo `docker compose config`).
+  `Hof` has no CI — nothing to test in a docs+submodules repo.
+- Git identity for all five repos (local config, not global):
   `zudaR107 <zudin_daniil@mail.ru>`. Commits are GPG-signed
   (`commit.gpgsign=true`, key `42088EAC3C827571`, already registered on the
   GitHub account).
@@ -70,6 +75,32 @@ running through Tor starts fresh named volumes (`schlussel-data`,
 `kuvert-data`) the first time - any account/data created before this batch
 landed won't be visible until re-created against the new setup.
 
+## Rename, meta-repo, and OSS polish (2026-07-09)
+
+Full context: `/home/zudar/.claude/plans/inherited-exploring-russell.md`.
+
+- The gateway repo was renamed `Tor` → `tor` (GitHub redirects the old URL;
+  local dir and remote updated to match). All references elsewhere fixed
+  to the lowercase slug — prose usage of the project name ("Tor" as a
+  proper noun) stays capitalized, same convention as Schlüssel/Schloss/
+  Kuvert.
+- New repo [`Hof`](https://github.com/zudaR107/Hof) — a meta-repo (this
+  directory, converted in place) holding only docs (`ROADMAP.md`,
+  `docs/stages/`) and git submodules pinning the four service repos.
+  Public, **no branch protection**, committed rarely (only to bump a
+  submodule pointer at a release) — direct commits, no issue/PR pipeline,
+  deliberately different in kind from the four service repos.
+- Milestone "Open-source polish" (schlussel, schloss, kuvert, tor): every
+  repo got a GitHub description + topics (set directly via `gh repo edit`,
+  not a file change) and README polish (license/CI badges, a link to `Hof`
+  as the platform overview). Merged:
+  [schlussel#38](https://github.com/zudaR107/schlussel/pull/38),
+  [schloss#37](https://github.com/zudaR107/schloss/pull/37),
+  [kuvert#51](https://github.com/zudaR107/kuvert/pull/51),
+  [tor#3](https://github.com/zudaR107/tor/pull/3) (tor's PR also added
+  `.env.production.example` for real-domain deployment and a missing
+  `.gitignore`).
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per
@@ -100,12 +131,15 @@ landed won't be visible until re-created against the new setup.
 
 ## Repo locations
 
+`/home/zudar/Sandbox/Hof/` is itself now the `Hof` meta-repo (git submodules
+below, see its own README for details).
+
 - `/home/zudar/Sandbox/Hof/schlussel/` — auth service (Hono API, RS256 JWT via JWKS)
 - `/home/zudar/Sandbox/Hof/schloss/` — home page / launcher
 - `/home/zudar/Sandbox/Hof/kuvert/` — budget service (api/ + web/, pnpm workspace)
-- `/home/zudar/Sandbox/Hof/Tor/` — reverse-proxy gateway (Caddyfile + docker-compose only, no app code)
+- `/home/zudar/Sandbox/Hof/tor/` — reverse-proxy gateway (Caddyfile + docker-compose only, no app code)
 
 ## GitHub account
 
 - Owner: `zudaR107` (git identity: `zudin_daniil@mail.ru`)
-- Repos: https://github.com/zudaR107/schlussel · https://github.com/zudaR107/schloss · https://github.com/zudaR107/kuvert · https://github.com/zudaR107/Tor
+- Repos: https://github.com/zudaR107/Hof · https://github.com/zudaR107/schlussel · https://github.com/zudaR107/schloss · https://github.com/zudaR107/kuvert · https://github.com/zudaR107/tor

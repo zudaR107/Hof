@@ -8,3 +8,9 @@ submodule's own `CHANGELOG.md` for that).
 - Initial repo: submodules for schlussel, schloss, kuvert, tor; README,
   LICENSE, and the existing ROADMAP.md/docs/stages carried over from the
   pre-git planning directory.
+
+## Submodule bumps
+- Bumped all four submodules to their open-source presentation polish
+  commits (license/CI badges, per-repo GitHub descriptions and topics,
+  Tor->tor URL fixes after the gateway repo's rename, and
+  `.env.production.example` in tor).
