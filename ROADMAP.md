@@ -139,6 +139,35 @@ any URL at all. Milestone "Authorization Code flow (PKCE)"
   params hard-rejected rather than silently downgraded to a plain login.
   No gaps found.
 
+## Community health files (2026-07-10)
+
+`CODE_OF_CONDUCT.md`, `SECURITY.md` (GitHub private-reporting flow,
+scope tailored per repo), issue templates (bug report, feature request),
+and a pull request template added to all five repos. Also removed
+`docs/stages/*.md` from Hof now that all 13 original stages are done.
+Merged: [schlussel#43](https://github.com/zudaR107/schlussel/pull/43),
+[schloss#42](https://github.com/zudaR107/schloss/pull/42),
+[kuvert#56](https://github.com/zudaR107/kuvert/pull/56),
+[tor#6](https://github.com/zudaR107/tor/pull/6).
+
+## Gateway HTTPS origin defaults (2026-07-10)
+
+Found by the user doing real hands-on testing through the tor gateway
+after trusting its local CA in Firefox: `docker-compose.yml`'s default
+origins (`ALLOWED_ORIGINS`, `VITE_ALLOWED_RETURN_ORIGINS`,
+`VITE_SCHLUSSEL_URL`, `VITE_KUVERT_URL`, `VITE_DEFAULT_APP_URL`) still
+assumed `http://`, but tor's Caddy auto-upgrades everything to HTTPS —
+broke the return_to allowlist ("Небезопасный адрес возврата") and CORS
+for anyone actually running the real stack rather than curling internal
+ports directly. Fixed all `http://` defaults to `https://` for the
+gateway-routed hostnames (`localhost`, `auth.localhost`,
+`kuvert.localhost`); left internal Docker-network URLs (e.g.
+`http://schlussel:4000` for kuvert-api's JWKS fetch) and container-local
+healthchecks alone, since those never go through the gateway. Merged:
+[schlussel#45](https://github.com/zudaR107/schlussel/pull/45),
+[kuvert#58](https://github.com/zudaR107/kuvert/pull/58),
+[schloss#44](https://github.com/zudaR107/schloss/pull/44).
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

@@ -24,3 +24,9 @@ submodule's own `CHANGELOG.md` for that).
   two files here, and removed `docs/stages/` now that all 13 original
   stages are done - the ROADMAP.md table plus each linked issue/PR already
   carries what was worth keeping.
+- Bumped schlussel/schloss/kuvert again: their docker-compose.yml default
+  origins (`ALLOWED_ORIGINS`, `VITE_ALLOWED_RETURN_ORIGINS`,
+  `VITE_SCHLUSSEL_URL`, `VITE_KUVERT_URL`, `VITE_DEFAULT_APP_URL`) still
+  assumed `http://`, but tor's gateway auto-upgrades everything to HTTPS -
+  broke the return_to allowlist and CORS for anyone actually running the
+  real stack. Found live by the user testing through the gateway.
