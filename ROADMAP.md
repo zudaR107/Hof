@@ -281,6 +281,24 @@ two - fixed to match. Merged:
 [schloss#52](https://github.com/zudaR107/schloss/pull/52),
 [kuvert#68](https://github.com/zudaR107/kuvert/pull/68).
 
+## kuvert: remove tab-switch flash via route loaders (2026-07-10)
+
+Separate report from the same user testing session: switching between
+kuvert's own tabs (Budget/Accounts/Goals/...) also flickered, but
+client-side routing was already correct (Layout/sidebar don't
+remount) - the cause was each page fetching its own data only after
+mounting, showing "empty/skeleton, then content pops in" on every
+first visit to a tab per session. Fixed with TanStack Router loaders
+prefetching each route's data via `queryClient.ensureQueryData`
+before the transition completes (the officially recommended
+integration pattern for these two libraries together, not a
+workaround) - required extracting the `QueryClient` into its own
+module (`src/lib/queryClient.ts`) so the router's loaders and the
+app's `QueryClientProvider` share the exact same instance. Loader
+failures are swallowed rather than surfacing an error boundary.
+Tests: 237/237, 12 new, no mismatches. Merged:
+[kuvert#70](https://github.com/zudaR107/kuvert/pull/70).
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

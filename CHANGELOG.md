@@ -49,3 +49,7 @@ submodule's own `CHANGELOG.md` for that).
   during the first-time SSO redirect chain by restoring the stored theme
   before first paint on every page load, instead of flashing the
   default theme first.
+- Bumped kuvert once more: switching between its own tabs also
+  flickered - each page fetched its own data only after mounting.
+  Fixed with TanStack Router loaders prefetching each route's data
+  before the transition completes.
