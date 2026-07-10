@@ -299,6 +299,28 @@ failures are swallowed rather than surfacing an error boundary.
 Tests: 237/237, 12 new, no mismatches. Merged:
 [kuvert#70](https://github.com/zudaR107/kuvert/pull/70).
 
+## kuvert: sidebar click-to-toggle, clipped Footer (2026-07-10)
+
+Two follow-ups from the same testing round. The sidebar's small round
+chevron toggle button was removed - clicking anywhere on the sidebar
+that isn't a nav link, the theme button, the logout button, or the
+user identity block now toggles collapsed/expanded, with each
+interactive child stopping the click from bubbling up so its own
+action never also toggles the sidebar.
+
+Also found and fixed a real bug via user testing in a fresh private
+Firefox window (ruling out caching as the earlier hypothesis): the
+Footer added in the "Unified UI shell" batch was never actually
+visible. `<main>` had `flex: 1; overflowY: auto` but no
+`min-height: 0` - a flex item defaults to `min-height: auto`, so on
+any page with enough content it grows past the viewport instead of
+scrolling within its allotted space, and the parent's
+`overflow: hidden` clips the Footer that comes after it in the flex
+column - not a "needs scrolling" issue, genuinely unreachable. Same
+fix applied to `<nav>` defensively. Tests: 239/239, 6 rewritten to
+match the button's removal, no mismatches. Merged:
+[kuvert#73](https://github.com/zudaR107/kuvert/pull/73).
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

@@ -53,3 +53,7 @@ submodule's own `CHANGELOG.md` for that).
   flickered - each page fetched its own data only after mounting.
   Fixed with TanStack Router loaders prefetching each route's data
   before the transition completes.
+- Bumped kuvert again: replaced the sidebar's toggle button with
+  click-anywhere-empty-to-toggle, and fixed the Footer being clipped
+  and unreachable on tall pages (a missing `min-height: 0` on a flex
+  item) - found live, in a fresh private window, ruling out caching.
