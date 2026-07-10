@@ -168,6 +168,25 @@ healthchecks alone, since those never go through the gateway. Merged:
 [kuvert#58](https://github.com/zudaR107/kuvert/pull/58),
 [schloss#44](https://github.com/zudaR107/schloss/pull/44).
 
+## ALLOWED_ORIGINS variable collision (2026-07-10)
+
+Follow-up to the batch above: tor's docker-compose.yml `include:`s
+schlussel and kuvert under one shared `.env`. Both services' own
+docker-compose.yml used the exact same outer substitution variable name
+`ALLOWED_ORIGINS` for two different intended CORS allowlists, so setting
+it in `tor/.env` silently fed the same value into both and clobbered
+kuvert-api's own default (`https://localhost,https://kuvert.localhost`)
+with schlussel's. Not currently visible as a symptom (kuvert-web proxies
+`/api/*` same-origin through its own Caddy, so no browser CORS preflight
+ever hits kuvert-api directly), but a real latent misconfiguration.
+Renamed the outer variable per-service - `SCHLUSSEL_ALLOWED_ORIGINS` and
+`KUVERT_ALLOWED_ORIGINS` - matching the naming convention already used
+for `KUVERT_URL`/`SCHLUSSEL_WEB_URL`; the container-internal env var name
+each app reads is unchanged (`ALLOWED_ORIGINS`). Merged:
+[schlussel#47](https://github.com/zudaR107/schlussel/pull/47),
+[kuvert#60](https://github.com/zudaR107/kuvert/pull/60),
+[tor#10](https://github.com/zudaR107/tor/pull/10).
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

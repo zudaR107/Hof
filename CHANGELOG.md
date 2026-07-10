@@ -30,3 +30,8 @@ submodule's own `CHANGELOG.md` for that).
   assumed `http://`, but tor's gateway auto-upgrades everything to HTTPS -
   broke the return_to allowlist and CORS for anyone actually running the
   real stack. Found live by the user testing through the gateway.
+- Bumped schlussel/kuvert/tor once more: `ALLOWED_ORIGINS` was the same
+  outer variable name in both schlussel's and kuvert's docker-compose.yml,
+  so tor's one shared `.env` fed the same value into both, silently
+  overriding kuvert-api's own CORS allowlist. Split into
+  `SCHLUSSEL_ALLOWED_ORIGINS`/`KUVERT_ALLOWED_ORIGINS`.
