@@ -187,6 +187,51 @@ each app reads is unchanged (`ALLOWED_ORIGINS`). Merged:
 [kuvert#60](https://github.com/zudaR107/kuvert/pull/60),
 [tor#10](https://github.com/zudaR107/tor/pull/10).
 
+## User feedback batch: SSO, UI consistency, kuvert UX (2026-07-10)
+
+Seven issues from the user's first real hands-on walkthrough after the
+gateway HTTPS fixes, across two milestones plus two standalone kuvert
+issues. All closed same day.
+
+- **Single sign-on across services** (milestone, schlussel only):
+  [schlussel#48](https://github.com/zudaR107/schlussel/pull/50) -
+  root cause: the refresh-token cookie had no `Domain` attribute, so it
+  was host-only, scoped to whichever app's own Caddy happened to proxy
+  the `/auth/token`/`/auth/refresh` call. A session started on schloss
+  never carried over to kuvert. Added optional `COOKIE_DOMAIN`, wired to
+  reuse tor's existing `DOMAIN` var - no client-side changes needed
+  anywhere, since each app's silent-refresh-on-mount logic already
+  existed and just needed the cookie to actually be visible.
+- **Unified UI shell across services** (milestone, schloss + schlussel +
+  kuvert): schloss's Header/Footer extracted into reusable components
+  ([schloss#47](https://github.com/zudaR107/schloss/pull/49), also fixed
+  `/favicon.svg` being cached `immutable` for a year); the hero
+  illustration (an 8-bit indexed PNG, visibly washed out) and the
+  favicon (an abstract gradient-blob shape that read as a generic
+  lightning bolt) both replaced with hand-authored on-brand SVGs
+  ([schloss#48](https://github.com/zudaR107/schloss/pull/50)); the
+  previously bare login/register pages got a matching header/footer
+  ([schlussel#49](https://github.com/zudaR107/schlussel/pull/51)); the
+  kuvert sidebar now shows the signed-in user's name/email and gained a
+  footer ([kuvert#61](https://github.com/zudaR107/kuvert/pull/65)).
+- **kuvert, standalone (no milestone)**: the sidebar's tiny 24x24 toggle
+  button replaced with a full-edge drag-to-resize handle, snapping shut
+  below a threshold, remembering the last width in localStorage
+  ([kuvert#62](https://github.com/zudaR107/kuvert/pull/64)); Budget and
+  Accounts empty-state copy expanded to explain the envelope-budgeting
+  distinction between the two, each page cross-referencing the other
+  ([kuvert#63](https://github.com/zudaR107/kuvert/pull/66)).
+
+Every PR in this batch had tests written by a fresh independent
+subagent from a behavioral spec (no implementation access) - no real
+bugs found, only expected staleness in one pre-existing schloss test
+(the old `<img>`-based hero assertion), fixed by a separate small agent
+dispatch. Two earlier batches (community health files, gateway HTTPS
+fixes) were retroactively corrected to match this repo's actual label
+convention (`type:*`, not GitHub's generic `bug`/`documentation`) and
+backfilled into the "Schloss Platform" project board and proper
+milestones - they had drifted from the established convention.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

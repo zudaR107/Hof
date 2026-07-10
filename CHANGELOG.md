@@ -35,3 +35,8 @@ submodule's own `CHANGELOG.md` for that).
   so tor's one shared `.env` fed the same value into both, silently
   overriding kuvert-api's own CORS allowlist. Split into
   `SCHLUSSEL_ALLOWED_ORIGINS`/`KUVERT_ALLOWED_ORIGINS`.
+- Bumped schlussel/schloss/kuvert for the user-feedback batch: shared
+  session across services (`COOKIE_DOMAIN`, schlussel), unified
+  Header/Footer + a redrawn hero illustration/favicon (schloss), a
+  header/footer on the login/register pages (schlussel/web), and a
+  resizable sidebar + visible user identity + onboarding copy (kuvert).
