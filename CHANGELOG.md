@@ -19,3 +19,8 @@ submodule's own `CHANGELOG.md` for that).
 - Bumped schlussel/schloss/kuvert to their Authorization Code + PKCE
   commits - the login handoff no longer puts the access token in a URL.
   Verified live end-to-end against the real running stack.
+- Bumped all four submodules to their community-health-files commits
+  (CODE_OF_CONDUCT.md, SECURITY.md, issue/PR templates); added the same
+  two files here, and removed `docs/stages/` now that all 13 original
+  stages are done - the ROADMAP.md table plus each linked issue/PR already
+  carries what was worth keeping.

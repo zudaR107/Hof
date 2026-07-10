@@ -20,8 +20,6 @@ docs that don't belong in any single service's history.
 ## What's in here
 
 - `ROADMAP.md` — development history and status across all four repos.
-- `docs/stages/` — one file per development stage, with what was built and
-  why.
 - Four git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tor/`), each
   pinned to a specific commit.
 
