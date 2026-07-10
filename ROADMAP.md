@@ -232,6 +232,55 @@ convention (`type:*`, not GitHub's generic `bug`/`documentation`) and
 backfilled into the "Schloss Platform" project board and proper
 milestones - they had drifted from the established convention.
 
+## SSO correction: silent re-auth, not a shared cookie (2026-07-10)
+
+The `COOKIE_DOMAIN` fix from the batch above turned out not to work:
+confirmed live that `localhost` has no embedded dot, so both curl and
+real browsers treat a dotless `Domain` value as a suffix boundary
+rather than a shareable registrable domain (the same defensive rule
+that stops a site setting a cookie for `.com`) - the cookie never
+actually got attached to a request against a different `*.localhost`
+subdomain. Reopened milestone "Single sign-on across services",
+reverted `COOKIE_DOMAIN` entirely (schlussel#52,
+[PR#53](https://github.com/zudaR107/schlussel/pull/53)) rather than
+leave dead code around, and replaced it with the standard
+centralized-IdP silent-reauth pattern: `/auth/login`'s PKCE branch now
+also establishes a same-origin session (this endpoint is only ever
+called from schlussel's own hosted login page), and `/auth/refresh`
+can issue a PKCE code from that session instead of an access token.
+The login page tries this first, silently, before ever showing the
+credentials form. **Verified live** against the real running stack:
+full protocol trace (register, login on `auth.localhost`, silent
+`/auth/refresh` with no password, code redemption on
+`kuvert.localhost`) confirmed working end to end. Tests: 142/142 API,
+71/71 web, no real bugs found across two independent dispatches.
+
+## Reduce SSO redirect flicker (2026-07-10)
+
+Follow-up to the fix above: the first-time cross-service redirect
+chain (app -> `auth.localhost` -> app) is 2-3 full page loads, each
+flashing the browser's default (unthemed, usually white) background
+before CSS/JS finishes loading - reported by the user as "the screen
+blinks," confirmed to only happen on the *first* navigation per
+session (subsequent navigations reuse the in-memory access token, no
+redirect chain). A true zero-flicker fix would need a hidden-iframe
+SSO pattern, deliberately avoided: modern browsers (Safari ITP,
+Firefox ETP) increasingly block third-party cookie access inside
+iframes for exactly this scenario, which would make it flaky across
+browsers. Instead, applied the standard no-FOUC-dark-mode technique to
+all three frontends - a synchronous inline script in each
+`index.html`'s `<head>` restoring the stored theme before first paint,
+plus themed blank divs (instead of `return null`) during every
+transient loading state in the chain (schlussel's login page while
+checking for a session, schloss/kuvert's auth callback while
+exchanging the code). schloss also had an unrelated pre-existing gap
+here - it only applied the stored theme inside HomePage's `useEffect`
+(after first paint) instead of eagerly in `main.tsx` like the other
+two - fixed to match. Merged:
+[schlussel#55](https://github.com/zudaR107/schlussel/pull/55),
+[schloss#52](https://github.com/zudaR107/schloss/pull/52),
+[kuvert#68](https://github.com/zudaR107/kuvert/pull/68).
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

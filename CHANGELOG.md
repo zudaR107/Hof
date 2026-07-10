@@ -40,3 +40,12 @@ submodule's own `CHANGELOG.md` for that).
   Header/Footer + a redrawn hero illustration/favicon (schloss), a
   header/footer on the login/register pages (schlussel/web), and a
   resizable sidebar + visible user identity + onboarding copy (kuvert).
+- Bumped schlussel again: `COOKIE_DOMAIN` didn't actually work
+  (`localhost` has no dot, so browsers won't share a Domain-scoped
+  cookie across its subdomains) - reverted it and replaced with silent
+  re-authentication through schlussel's own same-origin session.
+  Verified live end-to-end against the real running stack.
+- Bumped schlussel/schloss/kuvert once more: reduced the visible flicker
+  during the first-time SSO redirect chain by restoring the stored theme
+  before first paint on every page load, instead of flashing the
+  default theme first.
