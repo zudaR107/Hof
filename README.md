@@ -3,7 +3,7 @@
 Hof ("yard"/"courtyard" in German) is the meta-repo for the **Schloss
 platform** — a small suite of self-hosted personal services. It doesn't
 contain any application code itself; it's docs plus git submodules pinning
-the four service repos to the commits that make up the current release.
+the service repos to the commits that make up the current release.
 
 ## The platform
 
@@ -11,6 +11,9 @@ the four service repos to the commits that make up the current release.
 - [`schlussel`](https://github.com/zudaR107/schlussel) — auth: accounts, login, tokens
 - [`kuvert`](https://github.com/zudaR107/kuvert) — envelope budgeting
 - [`tor`](https://github.com/zudaR107/tor) — the reverse-proxy gateway all of the above sit behind
+- [`schloss-ui`](https://github.com/zudaR107/schloss-ui) — shared design
+  tokens and layout components, published as an npm package the other
+  three consume
 
 Each is independently developed, tested, and deployed (its own CI, its own
 Docker images, its own issue tracker). This repo exists to answer "what
@@ -19,9 +22,9 @@ docs that don't belong in any single service's history.
 
 ## What's in here
 
-- `ROADMAP.md` — development history and status across all four repos.
-- Four git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tor/`), each
-  pinned to a specific commit.
+- `ROADMAP.md` — development history and status across all repos.
+- Five git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tor/`,
+  `schloss-ui/`), each pinned to a specific commit.
 
 ## Getting the code
 

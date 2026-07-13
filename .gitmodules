@@ -10,3 +10,6 @@
 [submodule "tor"]
 	path = tor
 	url = git@github.com:zudaR107/tor.git
+[submodule "schloss-ui"]
+	path = schloss-ui
+	url = git@github.com:zudaR107/schloss-ui.git

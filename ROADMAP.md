@@ -391,6 +391,51 @@ proactively applied the identical fix to schlussel
 ([PR#54](https://github.com/zudaR107/schloss/pull/54)) before it could
 block anything there too.
 
+## schloss-ui: shared design system, planning (2026-07-13)
+
+The user's explicit ask from earlier feedback ("unify the interface, but
+without making the services identical copies") comes back around: not a
+quick fix this time, but a real shared package. Design decided before
+any code:
+
+- **What's already shared**: confirmed the core tokens (`--radius-*`,
+  `--shadow-*`, `--font-sans`, neutrals, `--success/warning/danger/info`)
+  are already byte-identical across schloss/schlussel/kuvert - drifted
+  apart only by hand-copying, not a real design gap.
+- **What actually makes the services feel like copies**: `--accent` is
+  the same blue (`#3b82f6`) everywhere, including in schloss's own UI
+  despite its logo already being purple (`#863bff`) - an internal
+  inconsistency, not just a cross-service one.
+- **The fix**: keep the shared "core" tokens as the single source of
+  truth in a new package; keep the *token names* consumers already use
+  unchanged (`--accent` etc.) but let each service set its own accent
+  value on top - schloss `#863bff` (now matches its own logo), schlussel
+  `#3b82f6` (keeps the platform's original blue as its own signature),
+  kuvert `#0d9488` teal (a finance association, deliberately distinct
+  from the shared `--success` green so the two don't get confused).
+- **Icons/logos**: the badge pattern (colored rounded-square + white
+  line-icon) is already informally consistent - formalized as a
+  documented contract (`strokeWidth: 2`, matching lucide-react's default
+  already used for every other icon) rather than centralizing the actual
+  brand mark SVGs, which stay one per service on purpose - that's the
+  "family, not copies" part.
+- **Packaging**: new repo [`schloss-ui`](https://github.com/zudaR107/schloss-ui)
+  (public, AGPL-3.0, same branch-protection ruleset as the other service
+  repos, bootstrapped directly on `main` - one-time exception, empty repo
+  had no PR base yet, same precedent as tor's original bootstrap),
+  published as `@zudar107/schloss-ui` to GitHub Packages on tagged
+  release (not on every merge like the platform's Docker images - a
+  package needs a fixed, reproducible version to pin against), installed
+  as a normal dependency so Dependabot can track its version like any
+  other package.
+
+Milestone "Shared UI system" (schloss-ui, schloss, schlussel, kuvert),
+seven issues - four in schloss-ui itself (design tokens, publish
+pipeline, Header/Footer components, the brand-mark/accent doc) and one
+per consuming repo (adopt the package once it has a first release).
+Design and issue creation only in this batch - the actual package
+implementation is separate, upcoming work.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

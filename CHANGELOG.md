@@ -68,3 +68,7 @@ submodule's own `CHANGELOG.md` for that).
   hint; also pinned `pnpm/action-setup`'s version exactly in CI across
   all three - an unrelated pnpm 11.12.0 release broke every workflow
   run regardless of what changed.
+- Added a fifth submodule, `schloss-ui` - a new repo for the shared
+  design-token/component package the other three will consume. Design
+  decided and seven issues filed (milestone "Shared UI system") before
+  any implementation - see ROADMAP.md for the full design rationale.
