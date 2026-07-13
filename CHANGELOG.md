@@ -77,3 +77,9 @@ submodule's own `CHANGELOG.md` for that).
   seven issues outright and replaced them with 13 concrete ones
   covering Header, cards/empty states, buttons, badges, filters,
   forms, modals, icons, number coloring, and a new toast pattern.
+- Bumped schloss-ui to `v0.1.0`: all 8 of its own issues from that plan
+  shipped (tokens, publish pipeline, Header/Footer/EmptyState, Button/
+  Badge/SegmentedControl, Field/Modal, StatTile/Amount/Sparkline,
+  Toast, icon docs), plus one hover-feedback fix found along the way.
+  Tagged and published to GitHub Packages - the three consumer
+  adoption issues (schloss, schlussel, kuvert) are next.

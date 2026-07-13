@@ -496,6 +496,48 @@ next. The review artifact itself will be deleted once the real
 components exist and match it (no tool to do that automatically - a
 manual follow-up once implementation lands).
 
+## schloss-ui: v0.1.0 - tokens and all 12 components shipped (2026-07-13)
+
+Implemented all 8 schloss-ui-side issues from the plan above, each its
+own PR through the standing pipeline, plus one fix found along the way:
+
+- [#6](https://github.com/zudaR107/schloss-ui/pull/13) package skeleton
+  (tsup, vitest, oxlint) and a tag-triggered GitHub Packages publish
+  workflow.
+- [#5](https://github.com/zudaR107/schloss-ui/pull/14) shared tokens
+  (`tokens.css`) - radius/shadow/font/neutral/semantic colors for
+  light/dark/oled/sepia, with `--accent`/`--accent-hover`/
+  `--accent-muted`/`--accent-text`/`--sidebar-accent` deliberately left
+  out and documented as a per-service contract instead.
+- [#7](https://github.com/zudaR107/schloss-ui/pull/15) `Header`,
+  `Footer`, `EmptyState`.
+- [#8](https://github.com/zudaR107/schloss-ui/pull/16) `Button`,
+  `Badge` (added `--badge-*` tokens - text shades intentionally differ
+  from `--success`/`--danger` etc for contrast against a muted
+  background), `SegmentedControl`.
+- [#17](https://github.com/zudaR107/schloss-ui/pull/18) fix, found right
+  after #8: `Button`, `Header`'s icon buttons, and `SegmentedControl`'s
+  inactive segments render from inline `style` objects, which can't
+  express `:hover` - all three shipped with zero hover feedback versus
+  the CSS-class-based buttons they replace. Fixed with an internal
+  `useHover` hook.
+- [#9](https://github.com/zudaR107/schloss-ui/pull/19) `Field`, `Modal`.
+  The independent test-writing agent found two real bugs here too: a
+  `prefix` prop collision with the native RDFa `prefix` attribute in
+  `Field`'s select mode, and a shorthand/longhand CSS mix warning in the
+  focus-ring style - both fixed before merge.
+- [#10](https://github.com/zudaR107/schloss-ui/pull/20) `StatTile`,
+  `Amount` (real inconsistency fixed: kuvert's Budget "Available"
+  column already colors by sign, account balances and transaction
+  amounts elsewhere didn't), `Sparkline`.
+- [#11](https://github.com/zudaR107/schloss-ui/pull/21) `Toast` - a
+  genuinely new pattern, not a fix.
+- [#12](https://github.com/zudaR107/schloss-ui/pull/22) icon rules
+  documented in README.md, `ICON_SIZE` exported.
+
+Tagged `v0.1.0`, published to GitHub Packages as `@zudar107/schloss-ui`.
+Consumer adoption (schloss#56, schlussel#59, kuvert#82/#83/#84) is next.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per
