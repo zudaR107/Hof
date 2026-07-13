@@ -57,3 +57,9 @@ submodule's own `CHANGELOG.md` for that).
   click-anywhere-empty-to-toggle, and fixed the Footer being clipped
   and unreachable on tall pages (a missing `min-height: 0` on a flex
   item) - found live, in a fresh private window, ruling out caching.
+- Bumped kuvert and tor once more: fixed the sidebar reverting a
+  just-completed drag-resize (a synthetic click bubbling to the
+  click-to-toggle handler); added a header with a link back to
+  schloss's home page and settings/logout access (tor's new
+  `SCHLOSS_URL` env var feeds it); and fixed a build-breaking unused
+  import that `pnpm test` didn't catch but `docker compose build` did.

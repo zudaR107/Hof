@@ -321,6 +321,56 @@ fix applied to `<nav>` defensively. Tests: 239/239, 6 rewritten to
 match the button's removal, no mismatches. Merged:
 [kuvert#73](https://github.com/zudaR107/kuvert/pull/73).
 
+## kuvert: drag-revert bug, header with home/settings link (2026-07-10)
+
+Four more items from the same testing round, all in kuvert (plus one
+small cross-repo wiring PR in tor):
+
+- **Drag-resize reverting** (kuvert#74,
+  [PR#75](https://github.com/zudaR107/kuvert/pull/75)): browsers fire a
+  synthetic click on mouseup right after a drag if the pointer ends up
+  back over an element inside the sidebar (common for a small/moderate
+  drag) - that phantom click was bubbling to the click-to-toggle handler
+  from the batch above and immediately collapsing the sidebar, silently
+  discarding the width just dragged to. A large drag doesn't trigger it
+  because the pointer ends up over the main content area, outside the
+  sidebar - exactly matching the reported "only happens if you don't
+  drag it all the way." Fixed by tracking whether a real drag happened
+  and suppressing the next click if so, cleared via `setTimeout(fn, 0)`
+  so only the same-tick synthetic click gets suppressed.
+- **tor: `SCHLOSS_URL`** (tor#11,
+  [PR#12](https://github.com/zudaR107/tor/pull/12)): added to
+  `.env.example`/`.env.production.example` - no existing var pointed
+  back toward schloss's home, needed for the header below.
+- **kuvert: header with home/settings link** (kuvert#76,
+  [PR#77](https://github.com/zudaR107/kuvert/pull/77)): no way to see a
+  persistent header, get back to schloss's home page, or discover
+  settings - the sidebar carries identity/logout/a Settings nav link,
+  but isn't a "header" the way schloss has one, offers no way back home,
+  and is hidden entirely on narrow/mobile viewports. Added a Header,
+  always visible (desktop and mobile), with a link back to schloss
+  (`VITE_SCHLOSS_URL`, reading tor's new var), the user's name, and
+  Settings/logout links - alongside, not replacing, the sidebar's own
+  controls. Note: kuvert's existing Settings page only covers currency -
+  there's no platform-wide "account settings" (name/email/password)
+  anywhere yet; this links to the existing page as the best available
+  fix for now.
+- **Build-breaking unused import** (kuvert
+  [PR#78](https://github.com/zudaR107/kuvert/pull/78)): the independent
+  test agent's new `Header.test.tsx` had an unused `screen` import -
+  `pnpm test` (vitest) passed fine, but `pnpm run build`
+  (`tsc -b && vite build`, what the Docker image actually runs) failed
+  on it under this project's strict tsconfig. Caught during the next
+  `docker compose build`, before it reached the live stack - a reminder
+  to verify the actual build command after a test-writing agent's
+  changes land, not just `pnpm test`.
+
+Every behavior-changing PR in this batch had tests written by a fresh
+independent subagent from a behavioral spec (no implementation access);
+no real bugs found beyond the two above (both found through the
+project's own live-stack/build verification, not the agents). Tests
+after this batch: kuvert 247/247.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per
