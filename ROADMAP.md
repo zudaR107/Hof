@@ -371,6 +371,26 @@ no real bugs found beyond the two above (both found through the
 project's own live-stack/build verification, not the agents). Tests
 after this batch: kuvert 247/247.
 
+## kuvert: shorten empty-state copy; CI-wide pnpm pin (2026-07-13)
+
+The Budget/Accounts empty-state copy added earlier was noticeably
+longer than every other tab's one-sentence hint (Goals, Debts,
+Transactions) - shortened both back down to one sentence, keeping the
+Budget<->Accounts cross-reference
+([kuvert#79](https://github.com/zudaR107/kuvert/issues/79), merged as
+part of [kuvert#80](https://github.com/zudaR107/kuvert/pull/80)).
+
+That PR's CI failed on an unrelated infrastructure issue: `pnpm`
+11.12.0 shipped with a bug in its own self-installer, and
+`pnpm/action-setup`'s unpinned `version: 11` self-updates to whatever
+the latest 11.x is at run time - broke every workflow run in every JS
+repo, regardless of what changed. Pinned to `11.7.0` (already cached,
+working) in kuvert as part of the same PR to unblock it, then
+proactively applied the identical fix to schlussel
+([PR#57](https://github.com/zudaR107/schlussel/pull/57)) and schloss
+([PR#54](https://github.com/zudaR107/schloss/pull/54)) before it could
+block anything there too.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

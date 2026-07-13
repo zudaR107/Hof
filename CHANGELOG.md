@@ -63,3 +63,8 @@ submodule's own `CHANGELOG.md` for that).
   schloss's home page and settings/logout access (tor's new
   `SCHLOSS_URL` env var feeds it); and fixed a build-breaking unused
   import that `pnpm test` didn't catch but `docker compose build` did.
+- Bumped kuvert/schlussel/schloss once more: shortened the Budget and
+  Accounts empty-state copy to match every other tab's one-sentence
+  hint; also pinned `pnpm/action-setup`'s version exactly in CI across
+  all three - an unrelated pnpm 11.12.0 release broke every workflow
+  run regardless of what changed.
