@@ -429,12 +429,72 @@ any code:
   as a normal dependency so Dependabot can track its version like any
   other package.
 
-Milestone "Shared UI system" (schloss-ui, schloss, schlussel, kuvert),
-seven issues - four in schloss-ui itself (design tokens, publish
-pipeline, Header/Footer components, the brand-mark/accent doc) and one
-per consuming repo (adopt the package once it has a first release).
-Design and issue creation only in this batch - the actual package
-implementation is separate, upcoming work.
+First pass at milestone "Shared UI system" filed seven issues (design
+tokens, publish pipeline, Header/Footer, one adoption issue per
+consumer) - design and issue creation only, no implementation yet.
+
+## schloss-ui: deep visual draft, plan rewritten (2026-07-13)
+
+The user pushed back on the first pass: they didn't want the *current*
+UI packaged as-is - they wanted to actually improve it first, together,
+before locking anything into a shared package. Two concrete complaints
+kicked this off: the Header is too wordy (a text label next to every
+icon), and pages feel empty in a way plain minimalism doesn't excuse.
+
+Worked this as an actual design review rather than more back-and-forth
+in text - built an HTML artifact (before/after mockups, using the
+platform's real token values so they're accurate previews, not
+abstractions) and iterated on it live across three rounds: Header/empty
+states/buttons, then forms/modals/badges/segmented filters, then
+icon-size-and-color rules/sign-colored numbers/a toast pattern (the one
+genuinely new addition, not a fix to something existing). Landed on:
+
+- **Header**: the logo *is* the home link (no separate "На главную"
+  text); an avatar circle replaces the visible user name; settings/logout
+  become icon-only with a `title` tooltip instead of icon+text.
+- **Cards/empty states**: tinted icon badges instead of flat squares or
+  raw emoji; summary-strip stat tiles above tables instead of jumping
+  straight from header to empty space (kuvert's Budget page already has
+  one - "Осталось распределить" - the pattern generalizes).
+- **Buttons/badges/filters**: one Button (primary/secondary/ghost/danger),
+  one Badge shape replacing three ad hoc styles, a SegmentedControl
+  replacing the Debts page's two-separate-buttons filter.
+- **Forms/modals**: a visible focus ring, a currency prefix slot, actual
+  error copy; modal titles get a context icon, footers get a clear
+  primary action instead of two equal-weight buttons.
+- **Icons**: `strokeWidth: 2` always, a 4-step size scale (14/16/20/28px)
+  tied to specific contexts, a 4-state color rule instead of eyeballing.
+- **Numbers**: found a *real* inconsistency, not an invented one - kuvert's
+  Budget "Available" column already colors by sign, but account balances
+  and transaction amounts elsewhere don't. One `Amount` rule fixes both.
+- **Toast**: no existing pattern to fix - proposed as a new addition,
+  first real usage wired into kuvert's save flows once Modal adoption
+  lands there.
+
+**Old plan erased, not just closed** - all seven issues from the first
+pass deleted outright (GraphQL `deleteIssue`, not closed-with-a-comment)
+since they no longer describe real work; superseded by 13 new, far more
+concrete issues covering the full draft:
+
+- schloss-ui: [#5](https://github.com/zudaR107/schloss-ui/issues/5) tokens
+  + accent contract, [#6](https://github.com/zudaR107/schloss-ui/issues/6)
+  publish pipeline, [#7](https://github.com/zudaR107/schloss-ui/issues/7)
+  Header/Footer/EmptyState, [#8](https://github.com/zudaR107/schloss-ui/issues/8)
+  Button/Badge/SegmentedControl, [#9](https://github.com/zudaR107/schloss-ui/issues/9)
+  Field/Modal, [#10](https://github.com/zudaR107/schloss-ui/issues/10)
+  StatTile/Amount/Sparkline, [#11](https://github.com/zudaR107/schloss-ui/issues/11)
+  Toast, [#12](https://github.com/zudaR107/schloss-ui/issues/12) icon docs.
+- schloss: [#56](https://github.com/zudaR107/schloss/issues/56).
+- schlussel: [#59](https://github.com/zudaR107/schlussel/issues/59).
+- kuvert (split into three - largest surface of the three consumers):
+  [#82](https://github.com/zudaR107/kuvert/issues/82) Header/Footer/EmptyState/accent,
+  [#83](https://github.com/zudaR107/kuvert/issues/83) buttons/badges/filters/cards/numbers,
+  [#84](https://github.com/zudaR107/kuvert/issues/84) forms/modals/toasts.
+
+Design and issue creation only in this batch too - implementation is
+next. The review artifact itself will be deleted once the real
+components exist and match it (no tool to do that automatically - a
+manual follow-up once implementation lands).
 
 ## Standing workflow (every stage)
 

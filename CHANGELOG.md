@@ -72,3 +72,8 @@ submodule's own `CHANGELOG.md` for that).
   design-token/component package the other three will consume. Design
   decided and seven issues filed (milestone "Shared UI system") before
   any implementation - see ROADMAP.md for the full design rationale.
+- Reworked the schloss-ui plan after a deeper, iterative design pass
+  (an HTML draft, refined across three rounds) - deleted the original
+  seven issues outright and replaced them with 13 concrete ones
+  covering Header, cards/empty states, buttons, badges, filters,
+  forms, modals, icons, number coloring, and a new toast pattern.
