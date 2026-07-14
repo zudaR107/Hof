@@ -576,6 +576,43 @@ Next: schlussel#59, kuvert#82/#83/#84 - expect the same local-dev-auth
 and (if any consumer's Dockerfile also lacks `pnpm-workspace.yaml` in its
 `COPY` list) the same Docker build fix to recur.
 
+## schlussel: adopted schloss-ui (2026-07-14)
+
+Second consumer adoption issue done - Header/Footer, the name/email/
+password form fields, and the submit buttons on Login/RegisterPage now
+use `@zudar107/schloss-ui`. Surfaced a real gap in the package itself:
+`Field` only had a decorative left-side `prefix` slot, but schlussel's
+password inputs need an interactive show/hide toggle on the right -
+added a symmetric, pointer-events-enabled `suffix` slot rather than
+bolting on a fragile pixel-offset workaround
+([schloss-ui#23](https://github.com/zudaR107/schloss-ui/issues/23),
+merged as [PR#24](https://github.com/zudaR107/schloss-ui/pull/24),
+tagged `v0.2.0`, tests written by an independent subagent - 6 new
+cases, no mismatches).
+
+One existing test needed a real update, not a mechanical one: the
+shared Header intentionally drops the visible "Schlüssel" text label
+next to the logo (the logo icon is itself the home link now, brand
+identity conveyed via a title tooltip instead) - `headerFooter.test.tsx`
+was asserting on that removed text content, updated to assert on the
+`title` attribute instead. Every other existing test kept passing
+unchanged. Merged: [schlussel#60](https://github.com/zudaR107/schlussel/pull/60).
+
+Hit a second, repo-specific Docker build bug this rollout's own
+`.npmrc`/CI wiring didn't cover: this repo is a pnpm workspace (API at
+root, `web/`), and the root API image's `Dockerfile` (which never uses
+schloss-ui at all) still failed on the same `[ERR_PNPM_FETCH_401]` -
+`pnpm install --frozen-lockfile` fetches every package in the lockfile
+to verify it, not just the current project's own deps, even with
+`--filter` (confirmed locally: `--filter` only scopes what gets linked
+into `node_modules`, not what gets fetched). Fixed by adding the same
+BuildKit-secret `.npmrc` auth to the root Dockerfile too
+([schlussel#61](https://github.com/zudaR107/schlussel/issues/61),
+[PR#62](https://github.com/zudaR107/schlussel/pull/62)).
+
+Next: kuvert#82/#83/#84 - the largest of the three consumers, split
+across three issues.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

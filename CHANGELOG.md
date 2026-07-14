@@ -92,3 +92,16 @@ submodule's own `CHANGELOG.md` for that).
   install fell back to the default supply-chain policy and rejected the
   recently-published dependency. schlussel and kuvert are next, and may
   hit the same Docker fix if their Dockerfiles have the same gap.
+- Bumped schloss-ui to `v0.2.0`: added a `suffix` slot to `Field`
+  (symmetric to `prefix` but interactive), needed for schlussel's
+  password show/hide toggle - a real capability gap found during
+  consumer adoption, fixed in the package rather than worked around
+  locally.
+- Bumped schlussel to its schloss-ui adoption commit: Header/Footer,
+  Login/RegisterPage's form fields, and the submit buttons now use the
+  shared package. Hit a second, repo-specific Docker build bug: this
+  repo is a pnpm workspace, and `pnpm install --frozen-lockfile`
+  fetches every package in the lockfile to verify it regardless of
+  `--filter`, so even the API image's Dockerfile (which never uses
+  schloss-ui) needed the same GitHub Packages auth wired in. kuvert is
+  next.
