@@ -538,6 +538,44 @@ own PR through the standing pipeline, plus one fix found along the way:
 Tagged `v0.1.0`, published to GitHub Packages as `@zudar107/schloss-ui`.
 Consumer adoption (schloss#56, schlussel#59, kuvert#82/#83/#84) is next.
 
+## schloss: adopted schloss-ui (2026-07-14)
+
+First consumer adoption issue done - swapped schloss's local Header,
+Footer, and ThemeToggle's hand-styled button for `@zudar107/schloss-ui`'s
+Header/Footer/Button/Badge, replaced the hand-copied token file with an
+`@import` of the package's `tokens.css`, layered schloss's own purple
+accent on top, and fixed the favicon's stroke width (2.4 -> 2) to match
+the shared icon rules. Existing tests (`HomePage.test.tsx` etc.) kept
+passing unchanged against the new import source, confirming a clean
+match per the issue's own signal check - no new test-writing agent
+dispatch needed. Merged:
+[schloss#67](https://github.com/zudaR107/schloss/pull/67).
+
+Wiring GitHub Packages auth (a scoped registry, requiring auth even for
+public packages) into CI and the Docker build surfaced two follow-ups:
+
+- **Local dev auth**: pnpm refuses to expand env vars in a *project*
+  `.npmrc`'s auth line (blocks a malicious committed `.npmrc` from
+  exfiltrating a token to an attacker registry) - so regenerating
+  `pnpm-lock.yaml` against the real `^0.1.0` registry dependency needed
+  a one-time local `pnpm config set "//npm.pkg.github.com/:_authToken"
+  "$(gh auth token)" --location user` (writes to the user's own
+  `~/.npmrc`, not the repo) run by the user themselves.
+- **Docker build bug** (schloss#68,
+  [PR#69](https://github.com/zudaR107/schloss/pull/69)): the first
+  Publish run on `main` after #67 failed -
+  `[ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION]` for the freshly-published
+  `schloss-ui@0.1.0`. Root cause: `pnpm-workspace.yaml` (holding the
+  `minimumReleaseAgeExclude` entry pnpm itself generated for the new
+  package) wasn't in the Dockerfile's `COPY` list, so the install step
+  inside the container never saw the exclusion. Fixed by adding it to
+  `COPY`; confirmed the very next Publish run on `main` succeeded.
+
+CHANGELOG entry: [schloss#70](https://github.com/zudaR107/schloss/pull/70).
+Next: schlussel#59, kuvert#82/#83/#84 - expect the same local-dev-auth
+and (if any consumer's Dockerfile also lacks `pnpm-workspace.yaml` in its
+`COPY` list) the same Docker build fix to recur.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per

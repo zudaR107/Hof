@@ -83,3 +83,12 @@ submodule's own `CHANGELOG.md` for that).
   Toast, icon docs), plus one hover-feedback fix found along the way.
   Tagged and published to GitHub Packages - the three consumer
   adoption issues (schloss, schlussel, kuvert) are next.
+- Bumped schloss to its schloss-ui adoption commit: local Header/Footer/
+  ThemeToggle button and hand-copied tokens replaced with the shared
+  package, schloss's own purple accent layered on top. Also fixed a
+  Docker build bug the rollout surfaced - `pnpm-workspace.yaml` (holding
+  pnpm's own `minimumReleaseAgeExclude` entry for the freshly-published
+  package) wasn't copied into the build context, so the container-side
+  install fell back to the default supply-chain policy and rejected the
+  recently-published dependency. schlussel and kuvert are next, and may
+  hit the same Docker fix if their Dockerfiles have the same gap.
