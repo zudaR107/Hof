@@ -137,3 +137,17 @@ submodule's own `CHANGELOG.md` for that).
   automatically for every workflow (pnpm's own suggested remedy),
   which is why CI never hit this. Set `ENV CI=true` explicitly in each
   Dockerfile's builder stage.
+- Bumped schloss-ui to `v0.3.0`: fixed `Field`'s too-small left
+  padding (a shorthand/longhand style-mixing bug jsdom couldn't
+  catch), added an optional `version` prop to `Footer`. Bumped all
+  three consumers to match: fixed the Header's home-link logo showing
+  the current service's own icon instead of schloss's (schlussel,
+  kuvert); fixed two kuvert empty-state icons with no background,
+  rendered flush left instead of centered (Tailwind's
+  `svg { display: block }` preflight breaking a `text-align: center`
+  assumption); added error handling + a toast to kuvert's header
+  logout button as a hardening measure for a reported "doesn't work"
+  that couldn't be conclusively reproduced via code review alone; and
+  wired each app's own package.json version into the footer. Found via
+  the user's first real hands-on walkthrough of the platform behind
+  the tor gateway.

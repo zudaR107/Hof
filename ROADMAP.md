@@ -724,6 +724,58 @@ script that triggers the check. Merged:
 [schlussel#71](https://github.com/zudaR107/schlussel/pull/71),
 [kuvert#106](https://github.com/zudaR107/kuvert/pull/106).
 
+## Real hands-on testing batch, first live run behind tor (2026-07-14)
+
+The user's first real walkthrough of the whole platform after the
+docker-compose build finally succeeded, surfacing five issues:
+
+- **Field's left padding too small everywhere**
+  ([schloss-ui#25](https://github.com/zudaR107/schloss-ui/issues/25),
+  [PR#26](https://github.com/zudaR107/schloss-ui/pull/26), tagged
+  `v0.3.0`): the same shorthand/longhand style-mixing bug class
+  already fixed once for `border`/`borderColor` - `fieldBoxStyle`'s
+  `padding` shorthand was mixed with conditionally-set
+  `paddingLeft`/`paddingRight` longhands. jsdom's style engine doesn't
+  reproduce the browser's exact cascade resolution here, so the
+  existing 20-test Field suite never caught it - only visible in a
+  real browser. Fixed by never mixing shorthand and longhand padding.
+- **Debts/Transactions empty-state icons: missing background, rendered
+  flush left instead of centered** (kuvert-only - schloss/schlussel
+  don't have this pattern): Tailwind's preflight sets
+  `svg { display: block }`, which
+  breaks `text-align: center` centering for the two ad hoc empty-state
+  fallbacks that don't fit the shared `EmptyState` component (unlike
+  `EmptyState` itself, which centers via an explicit flex wrapper, not
+  text-align). Wrapped both in the same tinted, centered badge
+  treatment as everywhere else.
+- **Header's home link showed the current service's own icon instead
+  of schloss's**: the link leads to schloss (schlussel/kuvert have no
+  home page of their own), but the badge showed schlussel's key /
+  kuvert's envelope icon instead of schloss's logo - confusing, since
+  it looked like the current service's own identity rather than
+  signaling "this goes to a different app". Fixed in both to show
+  schloss's own logo mark.
+- **Header logout button appeared not to work** (kuvert only): could
+  not conclusively reproduce the exact mechanism via code review alone
+  (no browser automation tooling available in this environment) -
+  added proper error handling and a toast on failure as a hardening
+  measure, which should at least surface the real cause the next time
+  it's tested, rather than failing silently.
+- **Footer should show the running version**: added an optional
+  `version` prop to the shared `Footer` (schloss-ui v0.3.0, same PR as
+  the Field fix above), wired to each app's own package.json version
+  via a Vite `define` (schlussel/kuvert read their root package.json,
+  since `web/`'s own version was never bumped past the Vite scaffold
+  default "0.0.0"; schloss's own root version was bumped from
+  "0.0.0" to "0.1.0" to match its siblings). Both `vite.config.ts` and
+  `vitest.config.ts` needed the `define` in all three repos, since
+  they're separate configs that don't share one.
+
+Merged: [schloss#78](https://github.com/zudaR107/schloss/pull/78),
+[schlussel#73](https://github.com/zudaR107/schlussel/pull/73),
+[kuvert#108](https://github.com/zudaR107/kuvert/pull/108). All three
+Docker builds succeeded on `main` after merge.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per
