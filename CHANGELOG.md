@@ -151,3 +151,15 @@ submodule's own `CHANGELOG.md` for that).
   wired each app's own package.json version into the footer. Found via
   the user's first real hands-on walkthrough of the platform behind
   the tor gateway.
+- Bumped all four once more: found the real cause of "logout doesn't
+  work" - the session cookie is host-only to schlussel's own origin,
+  so schloss/kuvert's `/auth/logout` calls (proxied through their own
+  origin) never actually carried it, and the redirect to login then
+  silently re-authenticated via the still-valid session. Added a new
+  `/logout` page to schlussel (real browser navigation, same-origin
+  with the cookie there) and pointed both consumers at it instead of
+  the broken cross-origin fetch - a pre-existing bug since the SSO
+  silent-reauth architecture was adopted, not a schloss-ui regression.
+  Also bumped schloss-ui to `v0.4.0`: `Footer` gained an optional
+  `description` prop, wired into all three consumers with a one-line
+  summary of what each service does.

@@ -776,6 +776,66 @@ Merged: [schloss#78](https://github.com/zudaR107/schloss/pull/78),
 [kuvert#108](https://github.com/zudaR107/kuvert/pull/108). All three
 Docker builds succeeded on `main` after merge.
 
+## Real hands-on testing, round two: a genuine cross-origin logout bug (2026-07-14)
+
+The user's second walkthrough (after the fixes above) surfaced a real,
+platform-wide auth bug, plus a footer content request.
+
+**Logout never actually worked, on schloss or kuvert, since the SSO
+silent-reauth architecture was adopted** - not a schloss-ui regression,
+a pre-existing bug this round of testing happened to finally exercise
+directly. Root cause: the session cookie is host-only to schlussel's
+own origin (no `Domain` attribute, by design - see the earlier "SSO
+correction" entry above for why). Both apps' `logout()` called
+schlussel's `/auth/logout` via a `fetch` proxied through their *own*
+origin - from the browser's point of view that's a same-origin request
+to schloss/kuvert, not schlussel, so the cookie was never attached,
+the DB session row was never deleted, and the "clear cookie" response
+targeted the wrong origin too. The subsequent redirect to schlussel's
+login page then silently re-authenticated the user via the
+still-valid session (the existing, correctly-working silent-reauth
+mechanism) - bouncing straight back to where they started, which is
+exactly what "logout does nothing" looks like.
+
+Presented two fix options to the user (real browser navigation vs.
+loosening CORS/SameSite for a direct cross-origin call); they picked
+the former, matching the platform's existing silent-reauth pattern
+rather than trading away cookie security posture for convenience.
+
+- **schlussel**: new `/logout` page ([#74](https://github.com/zudaR107/schlussel/issues/74),
+  [PR#75](https://github.com/zudaR107/schlussel/pull/75)) - does the
+  real logout same-origin via a normal browser navigation, then
+  bounces back to `return_to`. Merged and deployed first, since
+  schloss/kuvert's fixes depend on it existing.
+- **schloss** ([#79](https://github.com/zudaR107/schloss/issues/79),
+  [PR#80](https://github.com/zudaR107/schloss/pull/80)) and **kuvert**
+  ([#109](https://github.com/zudaR107/kuvert/issues/109),
+  [PR#110](https://github.com/zudaR107/kuvert/pull/110)): `logout()`
+  now only clears local state; a new `buildSchluesselLogoutUrl()`
+  helper (mirroring the existing `buildSchluesselLoginUrl`, but
+  synchronous - no PKCE needed for logout) sends the browser to
+  schlussel's `/logout` instead. Two of kuvert's existing tests needed
+  real updates (asserting the new `/logout` redirect target instead of
+  the old, broken `/login` one) - a genuine behavior change, not a
+  mechanical fix.
+
+**Footer description**: `Footer` gained an optional `description` prop
+(schloss-ui [#27](https://github.com/zudaR107/schloss-ui/issues/27),
+[PR#28](https://github.com/zudaR107/schloss-ui/pull/28), tagged
+`v0.4.0`) - one short sentence per service, rendered as its own line
+above the existing tagline (kept that tagline text exactly as it was,
+so nothing already querying the combined string broke). Wired into all
+three consumers: schloss "домашняя страница и точка входа", schlussel
+"вход и аккаунты", kuvert "конвертное бюджетирование". Merged:
+[schloss#82](https://github.com/zudaR107/schloss/pull/82),
+[schlussel#77](https://github.com/zudaR107/schlussel/pull/77),
+[kuvert#112](https://github.com/zudaR107/kuvert/pull/112).
+
+Also confirmed with the user that the Debts empty-state icon color
+difference (accent-tinted "Active" tab, which has a real CTA, vs.
+muted "Closed" tab, which doesn't) is intentional, not a bug -
+deliberately left as-is pending any further feedback.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per
