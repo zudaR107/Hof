@@ -121,3 +121,11 @@ submodule's own `CHANGELOG.md` for that).
   CI's `docker/build-push-action` step had it) - a plain `docker
   compose build`/`up --build` failed with `ERR_PNPM_FETCH_401`. Found
   while preparing local/docker-compose test instructions.
+- Bumped all three once more: every Dockerfile installed pnpm
+  unpinned, which pulled 11.13.0 at build time and aborted with
+  `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY` (a stricter pre-script
+  node_modules check that needs a TTY, which Docker builds never
+  have) - the same class of issue CI pinned around weeks earlier, just
+  never applied to the Dockerfiles themselves. Pinned all five
+  Dockerfiles to the same known-good `11.7.0`. Found on the user's
+  first real local `docker compose up --build`.
