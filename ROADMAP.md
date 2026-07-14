@@ -691,24 +691,38 @@ Merged: [schloss#72](https://github.com/zudaR107/schloss/pull/72),
 [schlussel#67](https://github.com/zudaR107/schlussel/pull/67),
 [kuvert#102](https://github.com/zudaR107/kuvert/pull/102).
 
-## Unpinned pnpm@latest breaking Docker builds (2026-07-14)
+## Docker builds failing on pnpm's deps-status check (2026-07-14)
 
-Found immediately after the fix above, on the user's first real local
-`docker compose up --build`: every Dockerfile installed pnpm
+Found on the user's first real local `docker compose up --build`,
+resolved in two passes.
+
+**First pass** (wrong diagnosis): every Dockerfile installed pnpm
 unpinned (`corepack prepare pnpm@latest` or `npm install -g pnpm`),
-which pulled whatever's newest at build time - pnpm 11.13.0 added a
-stricter pre-script node_modules/lockfile consistency check that, on
-a mismatch, tries to remove and reinstall node_modules, which needs
-interactive TTY confirmation a Docker build never has
-(`ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`). The exact same root
-cause as the pnpm 11.12.0 self-installer bug pinned around in CI
-weeks earlier ([kuvert#80](https://github.com/zudaR107/kuvert/pull/80)
-and its follow-ups) - just never applied to the Dockerfiles
-themselves. Pinned all five Dockerfiles (schloss, schlussel x2,
-kuvert x2) to the same known-good `11.7.0` CI already uses
-successfully. Merged: [schloss#74](https://github.com/zudaR107/schloss/pull/74),
+and the build failed with
+`[ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY]` on pnpm 11.13.0. Looked
+like the same class of issue as the pnpm 11.12.0 self-installer bug
+pinned around in CI weeks earlier
+([kuvert#80](https://github.com/zudaR107/kuvert/pull/80) and its
+follow-ups) - just never applied to the Dockerfiles themselves. Pinned
+all five Dockerfiles (schloss, schlussel x2, kuvert x2) to the same
+`11.7.0` CI already uses. Merged:
+[schloss#74](https://github.com/zudaR107/schloss/pull/74),
 [schlussel#69](https://github.com/zudaR107/schlussel/pull/69),
 [kuvert#104](https://github.com/zudaR107/kuvert/pull/104).
+
+**Second pass** (the real fix): the pin alone didn't work - the same
+error reproduced on 11.7.0 too, on the user's next build attempt.
+pnpm runs a deps-status check before any `run`/`exec` script and, on a
+mismatch, tries to reinstall - which needs interactive confirmation to
+purge `node_modules`, and a Docker build has no TTY to give it,
+regardless of pnpm version. The actual reason CI never hit this: GitHub
+Actions sets `CI=true` for every workflow automatically, which is
+exactly pnpm's own suggested remedy for this situation. Added
+`ENV CI=true` explicitly to each Dockerfile's builder stage, before the
+script that triggers the check. Merged:
+[schloss#76](https://github.com/zudaR107/schloss/pull/76),
+[schlussel#71](https://github.com/zudaR107/schlussel/pull/71),
+[kuvert#106](https://github.com/zudaR107/kuvert/pull/106).
 
 ## Standing workflow (every stage)
 

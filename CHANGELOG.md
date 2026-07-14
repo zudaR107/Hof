@@ -129,3 +129,11 @@ submodule's own `CHANGELOG.md` for that).
   never applied to the Dockerfiles themselves. Pinned all five
   Dockerfiles to the same known-good `11.7.0`. Found on the user's
   first real local `docker compose up --build`.
+- Bumped all three once more: the pnpm pin above wasn't the actual
+  fix - the same error reproduced on 11.7.0 too. The real cause: pnpm
+  runs a deps-status check before any run/exec script and needs a TTY
+  to confirm a node_modules purge on a mismatch, which a Docker build
+  never has, regardless of pnpm version. GitHub Actions sets `CI=true`
+  automatically for every workflow (pnpm's own suggested remedy),
+  which is why CI never hit this. Set `ENV CI=true` explicitly in each
+  Dockerfile's builder stage.
