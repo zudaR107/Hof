@@ -115,3 +115,9 @@ submodule's own `CHANGELOG.md` for that).
   copied `pnpm-workspace.yaml` into their build context from the
   start. **This closes out the entire schloss-ui rollout** - schloss,
   schlussel, and kuvert now share one design system.
+- Bumped schloss, schlussel, and kuvert once more: their
+  `docker-compose.yml` files never declared the `npm_token` BuildKit
+  secret their own Dockerfiles mount for GitHub Packages auth (only
+  CI's `docker/build-push-action` step had it) - a plain `docker
+  compose build`/`up --build` failed with `ERR_PNPM_FETCH_401`. Found
+  while preparing local/docker-compose test instructions.

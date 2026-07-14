@@ -673,6 +673,24 @@ now reflects real, shipped code rather than a proposal - still needs a
 manual follow-up to delete or repurpose it, no tool available to do
 that automatically.
 
+## docker-compose.yml missing the npm_token build secret (2026-07-14)
+
+Found while preparing local/docker-compose test instructions after the
+rollout above: each of schloss, schlussel, and kuvert's Dockerfiles
+mount a BuildKit secret (`npm_token`) to authenticate to GitHub
+Packages, wired into CI's `docker/build-push-action` step - but never
+into `docker-compose.yml` itself. A plain `docker compose build`/
+`up --build` (local dev, or a real docker-compose-based production
+deploy) failed with `ERR_PNPM_FETCH_401`. Fixed by declaring the
+secret in all three repos' `docker-compose.yml`, sourced from a
+`NODE_AUTH_TOKEN` environment variable set by whoever runs the build.
+Confirmed `docker compose config` still validates with and without
+the token set, and that tor's CI check (which validates the full
+multi-repo compose config with no token available) is unaffected.
+Merged: [schloss#72](https://github.com/zudaR107/schloss/pull/72),
+[schlussel#67](https://github.com/zudaR107/schlussel/pull/67),
+[kuvert#102](https://github.com/zudaR107/kuvert/pull/102).
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per
