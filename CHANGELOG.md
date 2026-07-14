@@ -105,3 +105,13 @@ submodule's own `CHANGELOG.md` for that).
   `--filter`, so even the API image's Dockerfile (which never uses
   schloss-ui) needed the same GitHub Packages auth wired in. kuvert is
   next.
+- Bumped kuvert to its schloss-ui adoption commit (all three of its
+  issues): Header/Footer/EmptyState/accent, buttons/badges/filters/
+  numbers, and form fields/modals/toasts. The local `Modal` component
+  is now deleted, replaced everywhere by the shared one; a new
+  `useToast` hook wires up the shared `Toast` for the first real usage
+  anywhere on the platform. Neither of the two Docker-auth bugs found
+  in schloss/schlussel recurred here - kuvert's Dockerfiles already
+  copied `pnpm-workspace.yaml` into their build context from the
+  start. **This closes out the entire schloss-ui rollout** - schloss,
+  schlussel, and kuvert now share one design system.

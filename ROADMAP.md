@@ -613,6 +613,66 @@ BuildKit-secret `.npmrc` auth to the root Dockerfile too
 Next: kuvert#82/#83/#84 - the largest of the three consumers, split
 across three issues.
 
+## kuvert: adopted schloss-ui, all three issues (2026-07-14)
+
+Third and final consumer, the largest surface of the three - split
+into three issues/PRs as planned, all merged same day, all with CI
+green and existing tests kept passing unchanged throughout (245-247
+tests depending on the batch).
+
+- **Header/Footer/EmptyState/accent**
+  ([kuvert#82](https://github.com/zudaR107/kuvert/pull/98)): mobile
+  menu trigger moved into `Header`'s `leftSlot` (built for exactly this
+  case); settings goes through `onSettings`/`useNavigate` instead of a
+  router `Link`; the user's name is now a single-initial avatar instead
+  of visible text. Emoji-based empty states across Budget, Accounts,
+  Goals, Debts, and Transactions replaced with the shared `EmptyState` -
+  kept two non-actionable cases (closed-debts tab, "add an account
+  first") as local elements since the shared component always requires
+  an action button. Switched to kuvert's own teal accent (`#0d9488`),
+  fixed the logo's stroke width (2.2 -> 2). One existing test needed a
+  real update (avatar/title instead of visible name; button instead of
+  link for settings) for the same reasons as schlussel's Header test.
+- **Buttons/badges/filters/numbers**
+  ([kuvert#83](https://github.com/zudaR107/kuvert/pull/99)): every ad
+  hoc button now uses the shared `Button`; Debts' Active/Closed filter
+  is now a `SegmentedControl`; transaction types, debt status, and a
+  goal's "Достигнуто" pill are now `Badge`s; account balances, Budget's
+  Available column, debt amounts, and income/expense transaction rows
+  use `Amount`'s sign-based coloring (transfers keep their own
+  info-blue text - `Amount` only models gain/loss/neutral). Added
+  `StatTile` summary strips to Goals/Debts/Transactions. Two bullets
+  from the original issue didn't apply to what was actually built:
+  schloss-ui never shipped a "Card" component (the existing card icon
+  treatment already matched the target pattern), and "Скоро" is
+  schloss's own placeholder pill, not kuvert's.
+- **Form fields/modals/toasts**
+  ([kuvert#84](https://github.com/zudaR107/kuvert/pull/100)): every
+  create/edit form's inputs now use the shared `Field`; the local
+  `Modal` component is replaced by the shared one everywhere and
+  deleted outright (each form's submit button moved from inside the
+  form to the Modal's footer, triggered via the form's `id` +
+  `requestSubmit()`); the shared `Toast` gets its first real usage
+  anywhere on the platform, via a small new `useToast` hook, wired into
+  every create/update/archive/settle/delete flow across all five
+  pages. Tests for `useToast` and the first page's toast wiring (new
+  capability, not a swap) written by an independent subagent from a
+  behavioral spec - 11 new tests, no bugs found.
+
+All three PRs' Docker builds succeeded on first merge (kuvert's
+Dockerfiles already copied `pnpm-workspace.yaml` into their build
+context from the start, so neither of the two Docker-auth bugs found
+in schloss/schlussel recurred here).
+
+**This closes out the entire schloss-ui rollout**: tokens, all 12
+components, and all three consumer repos (schloss, schlussel, kuvert)
+now share one design system instead of hand-copied, drifting styles.
+The published design-review artifact
+(https://claude.ai/code/artifact/9074a748-5b32-4187-964e-0503e6ceeca4)
+now reflects real, shipped code rather than a proposal - still needs a
+manual follow-up to delete or repurpose it, no tool available to do
+that automatically.
+
 ## Standing workflow (every stage)
 
 - **One issue per stage** (already created, see table below), **one PR per
