@@ -1117,6 +1117,54 @@ Envelopes page (nav item "Конверты") for the full existing CRUD -
 name (placeholder-fallback, same pattern as every other form),
 optional category, color, rollover toggle.
 
+## kuvert: opening-balance regressions (2026-07-15)
+
+The user reported two more things after the opening-balance-as-income
+change (kuvert#123): creating an account with a starting balance and
+going straight to Transactions showed nothing until a hard refresh
+("но иногда проходит и без этого" - a telling clue, since it means the
+gap was cache-staleness, not the data itself being wrong); and editing
+an account that showed 0₽, seeing "50000" pre-filled in the edit
+form's "Начальный баланс" field, saving, and the balance staying 0₽.
+
+Three distinct real bugs, all traced back to kuvert#123:
+
+1. **Stale cache**: `createMutation.onSuccess` in `AccountsPage.tsx`
+   only ever invalidated `['accounts']`, never `['transactions']`/
+   `['budget']` - even though creating an account with a non-zero
+   balance also creates a real transaction server-side now. Explains
+   "sometimes works without refreshing": if Transactions hadn't been
+   visited yet this session, its query was never cached in the first
+   place, so navigating to it fetched fresh data naturally.
+2. **Dead edit field**: `PUT /accounts/:id` only ever wrote the
+   `initial_balance` column - it never touched `transactions`, and
+   `GET /accounts/:id/balance` (since kuvert#123) never reads that
+   column either. So editing "Начальный баланс" and saving was a
+   complete no-op for the real, displayed balance, with a misleading
+   "Счёт обновлён" success toast. Removed the field from the edit form
+   entirely - it only ever has a real, one-time effect at creation.
+3. **Missing backfill**: any account created *before* kuvert#123
+   shipped has a non-zero `initial_balance` with no matching
+   transaction, so the new (transactions-only) balance formula
+   silently showed 0 for it regardless of the real starting balance.
+   Added a one-time hand-written SQL migration
+   (`0001_backfill_initial_balance_transactions`) that inserts the
+   missing opening transaction for every such account and zeroes the
+   now-inert column - verified by hand against a real schema-migrated
+   sqlite db (seeded realistic rows, ran the migration, checked
+   results and idempotency) before writing it up.
+
+Fixed via [PR#141](https://github.com/zudaR107/kuvert/pull/141)
+([kuvert#138](https://github.com/zudaR107/kuvert/issues/138)/[#139](https://github.com/zudaR107/kuvert/issues/139)/[#140](https://github.com/zudaR107/kuvert/issues/140)).
+Also fixed a real gap in the test harness itself while adding tests
+for the migration: `api/src/__tests__/helpers/db.ts` only ever ran the
+first migration file (`0000_...`), so this migration - or any future
+one - would have been silently unexercised by the entire test suite.
+It now loops over every `.sql` file in order. Verified the whole batch
+against a real Docker build too: built `kuvert-api` and ran it
+standalone against a fresh sqlite db, confirming the new migration
+applies cleanly on container startup.
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

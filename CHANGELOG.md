@@ -229,3 +229,12 @@ submodule's own `CHANGELOG.md` for that).
   was inconsistent with every other destructive action in the app
   (Accounts/Envelopes archive, Debts/Goals delete never confirm) -
   removed it.
+- Bumped kuvert once more: three real bugs from the opening-balance
+  change - creating an account never invalidated the Transactions/
+  Budget cache (stale until a hard reload), editing an account's
+  "Начальный баланс" was a silent no-op once transactions existed (now
+  removed from the edit form entirely), and every account created
+  before that change showed balance 0 (backfilled with a one-time
+  migration). Also fixed the test harness itself, which only ever ran
+  the first migration file - any migration after it, including this
+  one, was silently unexercised by the whole suite.
