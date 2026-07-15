@@ -1086,6 +1086,37 @@ being the *only* required textbox in that form - once it wasn't,
 the helper started resolving to the currency field instead; replaced
 with a direct id lookup.
 
+## kuvert: delete periods, real Envelopes page (2026-07-15)
+
+The user, after creating a period by accident, asked "как его удалить"
+(how do I delete it) and "как создавать конверты с деньгами" (how do I
+create envelopes with money in them) - both turned out to be real gaps,
+not questions with an existing answer.
+
+- `DELETE /periods/:id` (a real hard delete) existed on the backend
+  from early on, but nothing in the frontend ever called it - no
+  button anywhere.
+- Envelopes - the actual namesake of "envelope budgeting" - had a full
+  CRUD API (create/edit/archive, categories) but **zero frontend**: no
+  nav item, no page, no create form, anywhere. The Budget page could
+  only allocate money to envelopes that already existed; nothing in
+  the app could make one exist except a raw API call. Checked the
+  original MVP plan (saved from early in this project): Envelopes was
+  listed as its own item, but Stage 6 "Kuvert UI completion" only
+  shipped Accounts/Debts/Transactions pages, and Stage 7 "Budget
+  domain logic" was backend-only (rollover, recurring goals, CSV
+  import) - it silently fell through the cracks between the two,
+  never an explicit deferred-scope decision like reports/multi-currency/
+  i18n/email (still genuinely not implemented, but that was deliberate).
+
+Fixed ([kuvert#133](https://github.com/zudaR107/kuvert/issues/133)/[#134](https://github.com/zudaR107/kuvert/issues/134)
+via [PR#135](https://github.com/zudaR107/kuvert/pull/135)): a
+confirm-first delete button on the Budget page (periods can't be
+renamed either, so this was the only way to fix a mistake), and a new
+Envelopes page (nav item "Конверты") for the full existing CRUD -
+name (placeholder-fallback, same pattern as every other form),
+optional category, color, rollover toggle.
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

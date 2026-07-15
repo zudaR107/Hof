@@ -219,3 +219,9 @@ submodule's own `CHANGELOG.md` for that).
   form as originally asked - Accounts/Debts/Goals still blocked
   submission with the browser's native "Please fill out this field".
   Applied the same fix to all three.
+- Bumped kuvert once more: a delete-period button for the Budget page
+  (the backend route existed, nothing in the UI ever called it) and a
+  new Envelopes page - the actual namesake of envelope budgeting had a
+  full CRUD API but zero frontend, so creating one was only possible
+  via a raw API call. A real gap in the original MVP scope, not a
+  deliberately deferred feature.
