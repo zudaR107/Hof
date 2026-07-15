@@ -1020,6 +1020,54 @@ Three small usability requests from real hands-on use.
   alongside the two fixes above (one shared branch/PR for the whole
   milestone, per the standing workflow).
 
+## schloss-ui: stop publishing to GitHub Packages (2026-07-15)
+
+The user asked directly: "правильно мы сделали, что засунули в
+контейнер сборку какого-то пакета? Разве это правильный подход или
+это костыль?" (was building a package inside the container really the
+right call, or a workaround?) - about the whole GitHub-Packages-auth
+apparatus this session kept fighting (missing `npm_token` secrets,
+`minimumReleaseAgeExclude` needing manual bumps, every image needing
+registry auth even when it never imported the package). Root cause:
+GitHub Packages requires an authenticated token to install *any*
+package, even a public one - unlike npmjs.com. Two options: publish to
+npmjs.com properly (if schloss-ui is meant for outside self-hosters
+too), or drop the registry entirely (if it's internal-only). The user
+confirmed it's internal-only, with more services planned beyond the
+current three - so: no registry at all.
+
+**Migration** (schloss-ui#33/#34 via [PR#35](https://github.com/zudaR107/schloss-ui/pull/35),
+schloss#89-91 via [PR#92](https://github.com/zudaR107/schloss/pull/92),
+schlussel#84-86 via [PR#87](https://github.com/zudaR107/schlussel/pull/87),
+kuvert#127-129 via [PR#130](https://github.com/zudaR107/kuvert/pull/130)):
+schloss-ui is now a git submodule in each consumer, linked via pnpm's
+`workspace:*` protocol instead of a registry dependency. Removed,
+across all four repos: the `npm_token` BuildKit secret (every
+Dockerfile stage, including API-only images that never imported the
+package but still had to authenticate to verify the shared lockfile),
+`docker-compose.yml`'s `secrets:` blocks, CI's `registry-url`/`scope`/
+`NODE_AUTH_TOKEN`, every `.npmrc`, `minimumReleaseAgeExclude`, and
+schloss-ui's own tag-triggered publish workflow. schloss-ui is still
+consumed as its built `dist/` output (a workspace link doesn't change
+that) - each Dockerfile and CI job now builds it in-image first.
+
+Two real bugs found along the way, in both cases while doing the real
+verification this migration finally made possible - a genuine local
+`docker compose build` with **no token set at all**, previously
+impossible:
+- `pnpm install --filter web` alone doesn't install a linked
+  workspace package's own devDependencies (schloss-ui's `tsup` etc.) -
+  only enough to link against an already-built package. Needed
+  `--filter web --filter @zudar107/schloss-ui` together (kuvert,
+  schlussel/web) wherever the previous publish step is gone.
+- schlussel and schloss's root `vitest.config.ts` files run from the
+  repo root and (schlussel already had a comment explaining this for
+  `web/**`) need an explicit `exclude` for `schloss-ui/**` too, or the
+  root `pnpm test` silently sweeps up schloss-ui's own test suite
+  alongside the app's real ones - found because it inflated the test
+  count unexpectedly, then confirmed by listing which files actually
+  ran.
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

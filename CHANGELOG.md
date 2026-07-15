@@ -205,3 +205,12 @@ submodule's own `CHANGELOG.md` for that).
   распределить" instead of just sitting invisible in `initialBalance`),
   and the budget period name field's placeholder is now computed live
   from the start date and used as the actual name when left blank.
+- Bumped all four once more: stopped publishing schloss-ui to GitHub
+  Packages, which required an authenticated token to install even
+  though the package is public - it's now a git submodule in each
+  consumer, linked via pnpm's `workspace:*` protocol. Removed the
+  `npm_token` BuildKit secret from every Dockerfile, `docker-compose.
+  yml`'s `secrets:` blocks, CI's registry auth, every `.npmrc`, and
+  `minimumReleaseAgeExclude`. Verified for real: a plain `docker
+  compose build` now works with no token set at all, previously
+  impossible.
