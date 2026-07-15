@@ -163,3 +163,11 @@ submodule's own `CHANGELOG.md` for that).
   Also bumped schloss-ui to `v0.4.0`: `Footer` gained an optional
   `description` prop, wired into all three consumers with a one-line
   summary of what each service does.
+- Bumped kuvert once more: Debts/Budget/Transactions each briefly showed
+  a loading skeleton on every tab/period/filter switch, since their
+  `useQuery` calls re-key on that local state - added `placeholderData:
+  keepPreviousData` to all three so the previous list stays on screen
+  until the new one arrives. First stage run under the newly formalized
+  process rules (milestone as umbrella task, one branch per milestone,
+  `type(module): head` PR titles, Project board status tracking) - see
+  ROADMAP.md for the full checklist.

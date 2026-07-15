@@ -836,33 +836,85 @@ difference (accent-tinted "Active" tab, which has a real CTA, vs.
 muted "Closed" tab, which doesn't) is intentional, not a bug -
 deliberately left as-is pending any further feedback.
 
+## GitHub process rules formalized (2026-07-15)
+
+The user gave a standing checklist for how issues/PRs/milestones/the
+Project board/branches should be run from here on - written into the
+"Standing workflow" section above. The key change from how this session
+had been operating: **milestone = one umbrella task made of several
+issues**, and **one branch per milestone** (not per issue as before);
+PR titles now follow `type(module): head`; issues need this repo's real
+custom labels; the Project board's Status field must be kept current,
+not just populated once.
+
+## kuvert: keep-previous-data on tab/filter/period switches (2026-07-15)
+
+First stage run under the new process rules above - a fresh milestone
+([kuvert#22](https://github.com/zudaR107/kuvert/milestone/22) "Avoid
+loading flicker on query-key switches"), three issues, one shared
+branch, one PR.
+
+The user reported the Debts page's Активные/Закрытые toggle flashing a
+loading skeleton for a moment on every switch - the exact same class of
+flicker fixed for cross-page navigation earlier (see "kuvert: remove
+tab-switch flash via route loaders" above), but this time within a
+single page: the `useQuery` key includes the toggled filter, so
+TanStack Query treats each switch as a brand-new, uncached query and
+`isLoading` flips true. A code audit while fixing it found the
+identical anti-pattern in two more places: Budget's period-navigation
+arrows and Transactions' filter controls.
+
+Fix: `placeholderData: keepPreviousData` on all three `useQuery` calls -
+the previous list stays on screen (instead of being cleared to a
+skeleton) until the new data actually arrives. Filed as
+[kuvert#113](https://github.com/zudaR107/kuvert/issues/113) (Debts,
+the reported bug), [#114](https://github.com/zudaR107/kuvert/issues/114)
+(Budget), [#115](https://github.com/zudaR107/kuvert/issues/115)
+(Transactions), all closed by
+[PR#116](https://github.com/zudaR107/kuvert/pull/116). This is now a
+standing pattern: any `useQuery` keyed on local UI state (a filter, a
+tab, a selected period) gets `placeholderData: keepPreviousData`.
+
 ## Standing workflow (every stage)
 
-- **One issue per stage** (already created, see table below), **one PR per
-  issue** — never bundle multiple issues into a single PR.
-- One branch per stage, prefixed by type: `fix/...`, `feat/...`, `chore/...`,
-  `test/...`.
-- Claude creates the branch, implements the feature, then **dispatches a
+- **Milestone = one global/umbrella task**, made up of several issues (not
+  one milestone per issue). Always create or reuse one before filing issues
+  for a new batch of work.
+- Issues get a properly written title (never containing the word "Stage")
+  and this repo's own custom labels (`type:feat`/`type:fix`/`type:chore`/
+  `type:test`/`type:docs`, not GitHub's stock ones) — check the repo's real
+  label set (`gh label list`) before assigning, don't guess.
+- Every issue and PR gets added to the GitHub Project board (project id 2,
+  `PVT_kwHOBhrZh84BctmC`) with its Status field kept current (Todo → In
+  Progress → Done) as work actually progresses, not just added and left.
+- **One branch per milestone** (not per issue) — all issues under the same
+  milestone are implemented together on that one shared branch, prefixed by
+  type: `fix/...`, `feat/...`, `chore/...`, `test/...`. One PR from that
+  branch into `main` per repo (a milestone touching multiple repos gets one
+  branch + one PR per repo, since issues are per-repo).
+- **PR title** follows Conventional Commits: `type(module): head` — same
+  style as commit subject lines (English, imperative, ASCII-only).
+- Claude creates the branch, implements the issue(s), then **dispatches a
   fresh subagent with no prior context to write the tests** — briefed with
   a behavioral spec (function signatures, expected behavior) but explicitly
   told not to read the implementation files, so the tests are unbiased and
   can actually catch bugs rather than mirroring whatever the code happens
   to do. Claude runs the resulting tests against the real implementation,
   fixes any real bugs they surface, then commits (GPG-signed, English,
-  50/72 format, ASCII-only, no co-author line).
-- Claude pushes, opens the PR with **`Closes #N`** in the body (so the
-  linked issue auto-closes on merge), labeled, milestoned, assigned to
-  `@me`, and **merges it via `gh pr merge` once checks are clean** — no PR
-  is left for the user to push/merge manually.
-- A stage touching multiple repos produces one branch + one PR (each with
-  its own `Closes #N`) per repo, since issues are per-repo.
+  50/72 format, ASCII-only, **no Co-Authored-By or other self-attribution
+  line, ever**).
+- Claude pushes, opens the PR with **`Closes #N`** for every issue it
+  closes (so they auto-close on merge), labeled, milestoned, assigned to
+  `@me`, added to the Project board, and **merges it via `gh pr merge`
+  once checks are clean** — no PR is left for the user to push/merge
+  manually.
 - Every stage that changes behavior gets tests before being considered done.
 - After merge: delete the remote branch, clean up the local branch, update
-  this file's status and the stage's own doc.
+  this file's status and the stage's own doc, set the Project board items
+  to Done.
 - Every PR also appends one brief bullet to the repo's own `CHANGELOG.md`
   (under whichever theme section fits, or a new section if none does) —
   not a full commit-by-commit log, just enough to see what shipped.
-- New GitHub issue titles do not contain the word "Stage".
 
 ## Repo locations
 
