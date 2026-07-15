@@ -196,3 +196,12 @@ submodule's own `CHANGELOG.md` for that).
   navigation to schlussel's logout page and could win, silently
   re-authenticating the user. Fixed with a ref that tells the effect a
   deliberate logout is in flight.
+- Bumped schloss-ui to `v0.5.0`: `Modal` now submits its primary
+  action when Enter is pressed in a field - its Save/Cancel buttons
+  live outside the `<form>` by design, so native implicit-submission
+  never had anything to trigger. Bumped kuvert to match, alongside two
+  more UX fixes: an account's starting balance is now recorded as a
+  real opening transaction (so it counts toward "Осталось
+  распределить" instead of just sitting invisible in `initialBalance`),
+  and the budget period name field's placeholder is now computed live
+  from the start date and used as the actual name when left blank.

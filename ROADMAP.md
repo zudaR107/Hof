@@ -983,6 +983,43 @@ starts, that the redirect effect checks. New regression test uses the
 real `useAuthProvider` hook (not the existing file's mocked one) to
 actually exercise the race - deterministic across 5 repeated runs.
 
+## Budget/Accounts UX batch (2026-07-15)
+
+Three small usability requests from real hands-on use.
+
+- **Opening balance as income**: the user asked "что значит 'Осталось
+  распределить 0 р'?" after creating an account with an 80000₽
+  starting balance and a July budget period - correct per the
+  existing formula (`toBeBudgeted = income transactions in period -
+  allocated`, which never looks at `initialBalance`), but confusing.
+  Fix ([kuvert#123](https://github.com/zudaR107/kuvert/issues/123)):
+  account creation now records a matching opening transaction
+  (income if positive, expense if negative), so the money is
+  immediately available to allocate. `GET /accounts/:id/balance`
+  dropped its separate `+ initialBalance` term now that it's also a
+  transaction row - numerically identical results for every existing
+  scenario, verified against the full existing test suite.
+- **Period name placeholder** ([kuvert#124](https://github.com/zudaR107/kuvert/issues/124)):
+  the budget period name field required manually retyping a month
+  that was already shown as a static hint ("Июль 2026"). Now optional,
+  computed live from the start date via a new `formatMonthYear`
+  helper, and used as the actual name when left blank. Found and fixed
+  a real bug along the way: `Intl.DateTimeFormat('ru-RU', {month:
+  'long', year: 'numeric'})` appends a trailing "г." in this Node/ICU
+  environment ("июль 2026 г.", not "июль 2026") - stripped in the
+  helper.
+- **Enter-to-save on every card** ([schloss-ui#31](https://github.com/zudaR107/schloss-ui/issues/31)/[PR#32](https://github.com/zudaR107/schloss-ui/pull/32),
+  tagged `v0.5.0`): Modal's Save/Cancel buttons render outside the
+  `<form>` by design, so the browser's native implicit-submission
+  never had anything to trigger on Enter. Modal now triggers its
+  primary (last) action directly on Enter from a focused input/select
+  - fixes it platform-wide (Debts, Transactions, Accounts, Goals,
+  Budget periods) with one change instead of five. Bumped into kuvert
+  via [PR#126](https://github.com/zudaR107/kuvert/pull/126)
+  ([kuvert#125](https://github.com/zudaR107/kuvert/issues/125)),
+  alongside the two fixes above (one shared branch/PR for the whole
+  milestone, per the standing workflow).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
