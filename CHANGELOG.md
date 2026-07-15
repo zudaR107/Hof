@@ -181,3 +181,12 @@ submodule's own `CHANGELOG.md` for that).
   cookie immediately, instead of waiting for it to expire. Also bumped
   schloss-ui to v0.4.1 (Footer's description line got a small accent
   marker) and capitalized each consumer's description string.
+- Bumped schlussel and kuvert once more: `docker compose build` failed
+  intermittently with `gyp ERR! find Python` - better-sqlite3 falls
+  back to compiling from source (needs Python + a C/C++ toolchain,
+  absent from `node:22-alpine`) whenever its prebuilt-binary download
+  hits a transient network timeout, and the fallback then hard-failed
+  instead of just being slower. Installed `python3 make g++` in every
+  builder/runner stage that touches it (including each repo's web
+  image, which pulls it in too via the shared workspace lockfile).
+  Found on the user's real `docker compose up -d --build`.

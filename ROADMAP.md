@@ -931,6 +931,31 @@ three consumers bumped and capitalized their own description string:
 [schlussel#78](https://github.com/zudaR107/schlussel/issues/78)/[PR#81](https://github.com/zudaR107/schlussel/pull/81),
 [kuvert#117](https://github.com/zudaR107/kuvert/issues/117)/[PR#120](https://github.com/zudaR107/kuvert/pull/120).
 
+## Docker build: intermittent better-sqlite3 compile failure (2026-07-15)
+
+The user reported `docker compose build` occasionally failing with
+`gyp ERR! find Python`. Root cause: better-sqlite3's install script
+downloads a prebuilt binary for the target platform and only falls
+back to compiling from source via node-gyp (which needs Python and a
+C/C++ toolchain) if that download fails - `node:22-alpine` has
+neither, so a transient network timeout fetching the prebuilt binary
+(seen live: `prebuild-install warn install Request timed out`) turned
+into a hard build failure instead of a slower but working fallback.
+Hits both api images (which use better-sqlite3 directly) and web
+images (which don't, but `pnpm install --frozen-lockfile` verifies/
+builds every package in the shared workspace lockfile regardless of
+`--filter`, a constraint already hit before).
+
+Fix ([schlussel#82](https://github.com/zudaR107/schlussel/issues/82)/[PR#83](https://github.com/zudaR107/schlussel/pull/83),
+[kuvert#121](https://github.com/zudaR107/kuvert/issues/121)/[PR#122](https://github.com/zudaR107/kuvert/pull/122)):
+install `python3 make g++` in every builder/runner stage that runs a
+frozen-lockfile install. Verified by reproducing the exact failure
+(`npm install --build-from-source` in a bare `node:22-alpine`
+container) and confirming it's resolved once the toolchain is present
+- a full `docker compose build` couldn't be run locally (no GitHub
+Packages token in this environment), so CI's build/push workflow was
+the real end-to-end check.
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
