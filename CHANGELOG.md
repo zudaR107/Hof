@@ -190,3 +190,9 @@ submodule's own `CHANGELOG.md` for that).
   builder/runner stage that touches it (including each repo's web
   image, which pulls it in too via the shared workspace lockfile).
   Found on the user's real `docker compose up -d --build`.
+- Bumped schloss once more: logout on the home page still didn't work
+  even after the cross-origin cookie fix - a separate bug where the
+  page's own "redirect to login when logged out" effect raced logout's
+  navigation to schlussel's logout page and could win, silently
+  re-authenticating the user. Fixed with a ref that tells the effect a
+  deliberate logout is in flight.

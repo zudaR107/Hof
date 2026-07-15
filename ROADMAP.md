@@ -956,6 +956,33 @@ container) and confirming it's resolved once the toolchain is present
 Packages token in this environment), so CI's build/push workflow was
 the real end-to-end check.
 
+## schloss: logout still broken, a distinct pre-existing bug (2026-07-15)
+
+The user reported "выход с главной страницы" (logout from schloss's
+home page) not working, right after the cross-origin-cookie root cause
+was already fixed and verified for kuvert - a fair "didn't we already
+fix this?" question, but this turned out to be a genuinely separate
+bug in schloss's own `HomePage.tsx`, never exercised by earlier testing
+(which only clicked logout on kuvert).
+
+**Root cause**: `HomePage` has a `useEffect` watching `[loading, user]`
+that redirects to schlussel's LOGIN page whenever `!loading && !user` -
+written for a fresh, unauthenticated page load. `logout()` also clears
+`user` to `null` on its way to navigating to schlussel's LOGOUT page,
+which satisfies that same condition - the two navigations raced, and
+the login redirect could win, silently re-authenticating the user via
+a still-valid session and making it look exactly like logout did
+nothing. Existing tests never caught this because they mock `useAuth()`
+with a static value and never exercise a real `logout()`-driven `user`
+transition.
+
+Fixed ([#87](https://github.com/zudaR107/schloss/issues/87),
+[PR#88](https://github.com/zudaR107/schloss/pull/88)) with a ref set
+synchronously in the click handler, before `logout()`'s async work
+starts, that the redirect effect checks. New regression test uses the
+real `useAuthProvider` hook (not the existing file's mocked one) to
+actually exercise the race - deterministic across 5 repeated runs.
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
