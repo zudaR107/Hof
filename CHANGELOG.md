@@ -214,3 +214,8 @@ submodule's own `CHANGELOG.md` for that).
   `minimumReleaseAgeExclude`. Verified for real: a plain `docker
   compose build` now works with no token set at all, previously
   impossible.
+- Bumped kuvert once more: the placeholder-fallback-on-blank pattern
+  was only ever applied to the budget period name field, not every
+  form as originally asked - Accounts/Debts/Goals still blocked
+  submission with the browser's native "Please fill out this field".
+  Applied the same fix to all three.

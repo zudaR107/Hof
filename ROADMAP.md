@@ -1068,6 +1068,24 @@ impossible:
   count unexpectedly, then confirmed by listing which files actually
   ran.
 
+## kuvert: placeholder fallback everywhere, not just periods (2026-07-15)
+
+The user pointed out the previous fix (kuvert#124) was under-scoped:
+"я же сказал, что во всех формах должна срабатывать подсказка" (I did
+say the hint should kick in in EVERY form) - only the budget period
+name field got the fallback treatment, and a screenshot showed
+Accounts' "Название" still blocking submission with the browser's
+native "Please fill out this field" on a blank name.
+
+Fixed ([kuvert#131](https://github.com/zudaR107/kuvert/issues/131)/[PR#132](https://github.com/zudaR107/kuvert/pull/132)):
+removed `required` and added the same blank-falls-back-to-placeholder
+behavior to Accounts' Название, Debts' Контрагент, and Goals'
+Название. Along the way, fixed a DebtsPage test helper
+(`findRequiredTextbox`) that had been silently relying on counterparty
+being the *only* required textbox in that form - once it wasn't,
+the helper started resolving to the currency field instead; replaced
+with a direct id lookup.
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
