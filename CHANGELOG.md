@@ -225,3 +225,7 @@ submodule's own `CHANGELOG.md` for that).
   full CRUD API but zero frontend, so creating one was only possible
   via a raw API call. A real gap in the original MVP scope, not a
   deliberately deferred feature.
+- Bumped kuvert once more: the period-delete button's `window.confirm()`
+  was inconsistent with every other destructive action in the app
+  (Accounts/Envelopes archive, Debts/Goals delete never confirm) -
+  removed it.
