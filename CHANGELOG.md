@@ -171,3 +171,13 @@ submodule's own `CHANGELOG.md` for that).
   process rules (milestone as umbrella task, one branch per milestone,
   `type(module): head` PR titles, Project board status tracking) - see
   ROADMAP.md for the full checklist.
+- Bumped all four once more: the real root cause of "logout doesn't
+  work" - every consumer app's own proxied /auth/token and
+  /auth/refresh calls mint their OWN, separately-scoped session cookie
+  (no Domain attribute, by design), which schlussel's own /logout page
+  can never see. schlussel now only sets that cookie when the request
+  carries a trusted header only its own frontend's proxy injects;
+  kuvert and schloss's logout() also clears their own already-existing
+  cookie immediately, instead of waiting for it to expire. Also bumped
+  schloss-ui to v0.4.1 (Footer's description line got a small accent
+  marker) and capitalized each consumer's description string.

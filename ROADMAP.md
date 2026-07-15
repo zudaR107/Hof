@@ -875,6 +875,62 @@ the reported bug), [#114](https://github.com/zudaR107/kuvert/issues/114)
 standing pattern: any `useQuery` keyed on local UI state (a filter, a
 tab, a selected period) gets `placeholderData: keepPreviousData`.
 
+## Logout v2: the real root cause (2026-07-15)
+
+The user reported "Выйти" still not working even after the previous
+fix (schlussel's same-origin `/logout` page), with a Network-tab
+screenshot showing `POST auth.localhost/logout` succeed, immediately
+followed by `POST kuvert.localhost/refresh` also succeeding - the user
+was silently still logged in.
+
+**Root cause**: every consumer app (kuvert, schloss) proxies `/auth/*`
+straight to `schlussel:4000` from its own Caddy (docker) or vite dev
+proxy, transparently to the browser. The session cookie has no
+`Domain` attribute (host-only, by design), so a `Set-Cookie` on a
+response to one of these proxied calls gets scoped by the browser to
+that consumer app's own origin (`kuvert.localhost`), not
+`auth.localhost` - a second, fully independent session cookie
+schlussel's own same-origin `/logout` page can never see or clear.
+This cookie is minted the moment a consumer app exchanges its PKCE
+code at `/auth/token` (proxied), and kept alive indefinitely by that
+app's own on-mount `/auth/refresh` polling.
+
+Presented two fix layers via `AskUserQuestion`; the user picked the
+combined, recommended option over a logout-only patch:
+
+- **Root fix** ([schlussel#79](https://github.com/zudaR107/schlussel/issues/79),
+  [PR#80](https://github.com/zudaR107/schlussel/pull/80)): `/login`'s
+  PKCE branch, `/token`, and `/refresh` now only call `establishSession`
+  (i.e. only emit `Set-Cookie`) when the request carries a trusted
+  header (`X-Schlussel-Frontend: 1`) that only schlussel/web's own
+  Caddy/vite proxy injects - consumer apps' own proxies never add it,
+  so their proxied calls stop minting a cookie at all going forward.
+  `/logout`'s cookie-clearing stays unconditional. Six pre-existing
+  tests that implicitly assumed unconditional cookie issuance were
+  updated to either add the trusted header (representing schlussel's
+  own genuine usage) or assert the new, correct untrusted default (no
+  cookie) where they represented a consumer app's call.
+- **Immediate patch** ([kuvert#118](https://github.com/zudaR107/kuvert/issues/118)/[PR#119](https://github.com/zudaR107/kuvert/pull/119),
+  [schloss#84](https://github.com/zudaR107/schloss/issues/84)/[PR#85](https://github.com/zudaR107/schloss/pull/85)):
+  the root fix alone doesn't clear a cookie a user's browser already
+  holds from before it shipped - `logout()` in both apps now also
+  calls its own proxied `/auth/logout` first, immediately clearing that
+  app's own cookie and its server-side row, before navigating to
+  schlussel's `/logout` page for the `auth.localhost`-scoped one.
+
+## Footer polish: capitalized descriptions + nicer styling (2026-07-15)
+
+Two small pieces of user feedback on the Footer `description` line
+added the previous round: it needed a capital letter, and to look more
+deliberately designed. schloss-ui `v0.4.1`
+([#29](https://github.com/zudaR107/schloss-ui/issues/29),
+[PR#30](https://github.com/zudaR107/schloss-ui/pull/30)) gave the line
+a small accent-colored marker dot and a touch more weight/size; all
+three consumers bumped and capitalized their own description string:
+[schloss#83](https://github.com/zudaR107/schloss/issues/83)/[PR#86](https://github.com/zudaR107/schloss/pull/86),
+[schlussel#78](https://github.com/zudaR107/schlussel/issues/78)/[PR#81](https://github.com/zudaR107/schlussel/pull/81),
+[kuvert#117](https://github.com/zudaR107/kuvert/issues/117)/[PR#120](https://github.com/zudaR107/kuvert/pull/120).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
