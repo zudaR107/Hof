@@ -244,3 +244,8 @@ submodule's own `CHANGELOG.md` for that).
   next to it, so a user who had created an account, a period, income,
   and an envelope had no way to discover how to allocate money to it.
   Added a dashed-underline/hover affordance plus a tooltip.
+- Bumped kuvert once more: archiving a счёт/конверт was a one-way
+  trip - `archived` was only ever set to true, never back to false,
+  and the list endpoints always filtered it out, so archived items
+  weren't even listable. Added `?archived=true` listing, a restore
+  endpoint, and an "Активные/Архивные" tab on both pages.

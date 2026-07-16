@@ -1183,6 +1183,28 @@ regression check.
 Fixed via [PR#143](https://github.com/zudaR107/kuvert/pull/143)
 ([kuvert#142](https://github.com/zudaR107/kuvert/issues/142)).
 
+## kuvert: archiving had no way back (2026-07-16)
+
+Follow-up from the same conversation: the user asked whether it was
+intentional that archiving a счёт/конверт can't be undone through the
+interface. It wasn't - `DELETE /accounts/:id` and
+`DELETE /envelopes/:id` only ever set `archived=true`; nothing set it
+back to `false` anywhere, and `GET /accounts` / `GET /envelopes`
+always filtered to `archived=false` unconditionally, so archived
+items weren't even listable, let alone restorable. Decided to add
+restore rather than switch to hard delete, since both tables are
+referenced by real transaction history via foreign keys and a true
+delete would either orphan or cascade-delete financial records.
+
+Added `?archived=true` to both list endpoints, `POST
+/accounts/:id/restore` and `POST /envelopes/:id/restore`, and an
+"Активные/Архивные" `SegmentedControl` tab on both pages (reusing the
+pattern already used on the Debts page) with a "Восстановить" action
+on archived cards.
+
+Fixed via [PR#145](https://github.com/zudaR107/kuvert/pull/145)
+([kuvert#144](https://github.com/zudaR107/kuvert/issues/144)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
