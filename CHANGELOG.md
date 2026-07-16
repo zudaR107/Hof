@@ -273,3 +273,9 @@ submodule's own `CHANGELOG.md` for that).
   display-mode control (a dashed underline) was still barely
   visible. Redesigned as a colored pill button with a pencil icon,
   filling solid accent on hover.
+- Bumped kuvert once more: the pill was wider than the editing
+  input in some rows and narrower in others, so switching a row into
+  edit mode reflowed the whole table's later columns to the right
+  (the table used the browser's default "auto" layout, which
+  recomputes column widths from whatever's rendered in every row).
+  Locked column widths with `table-layout: fixed`.

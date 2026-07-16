@@ -1329,6 +1329,20 @@ the weight the app's own `.btn-primary` convention already uses for
 Fixed via [kuvert#153](https://github.com/zudaR107/kuvert/pull/153)
 ([kuvert#152](https://github.com/zudaR107/kuvert/issues/152)).
 
+## Budget table reflow on allocation edit (2026-07-16)
+
+The pill button and the editing input it swaps for aren't the same
+width, and the table used the browser's default "auto" layout (column
+widths recomputed from whatever's currently rendered in every row) -
+so clicking into edit mode on one row reflowed the whole table, shoving
+"Потрачено"/"Доступно" to the right for as long as that row's input was
+open. Fixed with `table-layout: fixed` plus explicit widths on the
+header cells, so column sizing no longer depends on what any individual
+row happens to be rendering.
+
+Fixed via [kuvert#155](https://github.com/zudaR107/kuvert/pull/155)
+([kuvert#154](https://github.com/zudaR107/kuvert/issues/154)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
