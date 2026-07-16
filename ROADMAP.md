@@ -1371,6 +1371,24 @@ at all times. Focus-and-select-if-"0" moved from the input's own
 Fixed via [kuvert#157](https://github.com/zudaR107/kuvert/pull/157)
 ([kuvert#156](https://github.com/zudaR107/kuvert/issues/156)).
 
+## Idle allocation pill sizing (2026-07-16)
+
+Immediate follow-up, once the morph landed: the persistent container
+had been given a single hardcoded 132px width for *both* states (needed
+for the editing input to have room), which meant the idle pill was
+forced to that same width even for a short value like "0 ₽" - a
+stretched, mostly-empty pill, per another screenshot.
+
+Fix: only apply the explicit width once `editing` is true. While idle,
+the display button goes back to being a normal in-flow flex child
+(instead of `position: absolute; inset: 0`) so the container's own size
+is once again driven by the button's actual content - the pill is only
+ever as wide as the amount it's showing, and only widens to the fixed
+editing size at the moment it's actually needed.
+
+Fixed via [kuvert#159](https://github.com/zudaR107/kuvert/pull/159)
+([kuvert#158](https://github.com/zudaR107/kuvert/issues/158)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

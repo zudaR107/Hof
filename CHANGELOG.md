@@ -287,3 +287,8 @@ submodule's own `CHANGELOG.md` for that).
   box radius, background, focus ring) and crossfades two
   always-mounted content layers via opacity, each made
   keyboard/pointer-unreachable while inactive.
+- Bumped kuvert once more: the morph container was hardcoded to a
+  fixed (editing-sized) width in both states, so a short idle value
+  like "0 ₽" rendered as a stretched, mostly-empty pill. The fixed
+  width now only applies once actually editing; while idle the
+  display button sizes the pill to its own content again.
