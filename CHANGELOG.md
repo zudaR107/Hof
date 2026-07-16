@@ -279,3 +279,11 @@ submodule's own `CHANGELOG.md` for that).
   (the table used the browser's default "auto" layout, which
   recomputes column widths from whatever's rendered in every row).
   Locked column widths with `table-layout: fixed`.
+- Bumped kuvert once more: asked to rework the display/edit
+  transition itself, not just fix its side-effects - swapping a
+  `<button>` for an `<input>` (a full mount/unmount) meant nothing
+  could actually animate between them. Replaced with one persistent
+  container that morphs shape via CSS transition (pill radius ->
+  box radius, background, focus ring) and crossfades two
+  always-mounted content layers via opacity, each made
+  keyboard/pointer-unreachable while inactive.

@@ -1343,6 +1343,34 @@ row happens to be rendering.
 Fixed via [kuvert#155](https://github.com/zudaR107/kuvert/pull/155)
 ([kuvert#154](https://github.com/zudaR107/kuvert/issues/154)).
 
+## Allocation edit transition rework (2026-07-16)
+
+After two rounds of styling-only polish, the user pushed back explicitly:
+"не просто зафиксировать при редактировании, а полноценно переработать
+эффект при редактировании поля" (not just fix the [layout shift] while
+editing, but fully rework the editing effect itself). Offered two
+concrete directions - always-editable inline field vs. a smooth morph
+animation - and the user picked the morph, keeping the two-mode
+(display/edit) interaction.
+
+The real blocker to any animation at all: the display `<button>` and the
+editing `<input>` were two separately-mounted elements swapped via a
+ternary, so there was nothing for CSS transitions to animate *between* -
+a mount/unmount is instant by definition. Rebuilt as one persistent
+container (fixed 132×32px box, so this can't reintroduce the #154/#155
+reflow either) whose `border-radius` (999→8), `background`,
+`border-color`, and focus-ring `box-shadow` transition via CSS, with two
+always-mounted content layers (display text+icon, and the input)
+crossfading via `opacity`. Each layer gets `tabIndex={-1}` and
+`pointer-events: none` while inactive, so keyboard Tab order and click
+targets stay correct despite both technically being present in the DOM
+at all times. Focus-and-select-if-"0" moved from the input's own
+`onFocus` (meaningless now that it's permanently mounted) to a
+`useEffect` keyed on the `editing` flag.
+
+Fixed via [kuvert#157](https://github.com/zudaR107/kuvert/pull/157)
+([kuvert#156](https://github.com/zudaR107/kuvert/issues/156)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
