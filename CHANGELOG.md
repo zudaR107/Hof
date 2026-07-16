@@ -238,3 +238,9 @@ submodule's own `CHANGELOG.md` for that).
   migration). Also fixed the test harness itself, which only ever ran
   the first migration file - any migration after it, including this
   one, was silently unexercised by the whole suite.
+- Bumped kuvert once more: the Budget page's envelope-allocation button
+  (click the "Выделено" amount to edit it) worked correctly but had no
+  visual affordance at all - styled identically to the read-only cells
+  next to it, so a user who had created an account, a period, income,
+  and an envelope had no way to discover how to allocate money to it.
+  Added a dashed-underline/hover affordance plus a tooltip.

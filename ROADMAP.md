@@ -1165,6 +1165,24 @@ against a real Docker build too: built `kuvert-api` and ran it
 standalone against a fresh sqlite db, confirming the new migration
 applies cleanly on container startup.
 
+## kuvert: invisible allocation control (2026-07-16)
+
+User report: created an account, a budget period, income transactions,
+and an envelope ("Продукты") - then couldn't figure out how to
+allocate the "Осталось распределить" amount into the envelope at all.
+Investigated: the control existed and worked (click the "Выделено"
+amount, it becomes an editable input, `PUT
+/periods/:id/budget/:envelopeId`) - it just had zero visual affordance,
+styled identically to the read-only "Потрачено"/"Доступно" cells next
+to it. Added a dashed-underline + hover-state class (`allocated-cell`
+in `index.css`, matching the app's existing `.btn-*` hover
+conventions) and a native tooltip. Tests (written independently, from
+spec only) lock in the class and tooltip text plus a click-to-edit
+regression check.
+
+Fixed via [PR#143](https://github.com/zudaR107/kuvert/pull/143)
+([kuvert#142](https://github.com/zudaR107/kuvert/issues/142)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
