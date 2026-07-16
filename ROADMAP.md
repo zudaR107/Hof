@@ -1311,6 +1311,24 @@ Fixed via [schloss-ui#43](https://github.com/zudaR107/schloss-ui/pull/43)
 and [kuvert#151](https://github.com/zudaR107/kuvert/pull/151)
 ([kuvert#150](https://github.com/zudaR107/kuvert/issues/150)).
 
+## Allocation display redesign (2026-07-16)
+
+The "Выделено" polish from the previous batch (kuvert#150/#151) only
+touched the *editing*-mode input - the *display*-mode control (the
+amount shown before you click it) still just had a dashed underline,
+which the user pointed out with another screenshot was still barely
+noticeable. Asked for a "кардинально" (radical) change this time, not
+another tweak. Redesigned as a colored pill button (`var(--accent-muted)`
+background, `var(--accent)` text, fully rounded, bold) with a small
+pencil icon next to the amount, filling solid `var(--accent)` with
+inverted text on hover - unmistakably a clickable control now, matching
+the weight the app's own `.btn-primary` convention already uses for
+"this is the thing to interact with". Removed the now-dead
+`.allocated-cell` CSS rule.
+
+Fixed via [kuvert#153](https://github.com/zudaR107/kuvert/pull/153)
+([kuvert#152](https://github.com/zudaR107/kuvert/issues/152)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

@@ -268,3 +268,8 @@ submodule's own `CHANGELOG.md` for that).
   stay on-screen. Also restyled the Budget page's inline "Выделено"
   editor (plain/flat before - always-on accent border, no focus
   ring, no currency context) to match the rest of the app's fields.
+- Bumped kuvert once more: that "Выделено" polish still wasn't
+  enough - it only touched the editing-mode input, and the
+  display-mode control (a dashed underline) was still barely
+  visible. Redesigned as a colored pill button with a pencil icon,
+  filling solid accent on hover.
