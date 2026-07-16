@@ -1205,6 +1205,84 @@ on archived cards.
 Fixed via [PR#145](https://github.com/zudaR107/kuvert/pull/145)
 ([kuvert#144](https://github.com/zudaR107/kuvert/issues/144)).
 
+## Custom calendar, amount fields, arrow-key navigation (2026-07-16)
+
+User request: replace every native browser date/number widget across
+the app with something matching the design system. Five asks in one
+message: an Avito-style click-to-pick range calendar (first click =
+start, second = end, colored bar spans the range, third click
+restarts, same-day-twice = one-day range) living in schloss-ui and
+replacing every "Начало"/"Конец" pair with one "Период" field;
+thousand-space grouping while typing amounts; an existing "0"
+default getting replaced instead of prepended-to on the first
+keystroke; the same calendar in single-select mode for "Срок"
+fields; and Up/Down arrows moving between form fields instead of
+driving a number input's native spinner (which was incrementing by
+kopecks). A sizable enough change - new shared-library components
+plus rewiring five forms across two repos - that it went through
+plan mode first.
+
+A follow-up mid-plan: asked whether the individual field *types*
+(not just the calendar) could also be unified into schloss-ui, since
+the library will back future services too. Landed on one
+generalization judged actually reusable rather than app-specific:
+`AmountField`, a money-specific `NumberField` with a currency-symbol
+prefix derived from an ISO code (not hardcoded `₽`) - which also
+fixed a real bug in passing, since the Debt/Account forms already
+let the user pick a currency other than RUB while their amount
+field's prefix ignored that entirely. Deliberately did *not* add
+canned-label date-field presets (e.g. a preset "Срок" component) -
+unlike a currency symbol, a hardcoded Russian label would make the
+component *less* reusable for a future, differently-worded service,
+not more.
+
+schloss-ui gained: `Calendar`/`CalendarPopover` (internal, portaled
+to `document.body` like `Modal`/`Toast` - a plain nested popover
+would get clipped by Modal's own `overflow:auto` dialog box),
+`DateField`/`DateRangeField`, `NumberField`/`AmountField` +
+`formatGroupedNumber`/`parseGroupedNumber`/`currencySymbol`, and
+`handleArrowFieldNavigation`. One real cross-component conflict
+found and fixed by construction: Modal already attaches its own
+document-level bubble-phase Escape listener that closes the whole
+form - the popover's own Escape handler is registered with
+`capture: true` so it always wins the race and calls
+`stopPropagation()`, instead of Escape closing the entire form
+whenever the calendar happened to be open.
+
+A caret-position bug surfaced only once real forms exercised
+`AmountField` with a decimal amount (found while rewriting kuvert's
+own tests, not by either round of independent test-writing): typing
+a digit right after "." inserted it *before* the dot instead of
+after, so "10.50" posted as "1050" - the cursor-preserving reformat
+logic counted only digit characters before the caret, losing track
+of the dot's own position. Fixed upstream in schloss-ui first (own
+issue/PR/merge) before continuing kuvert's rewiring.
+
+kuvert then adopted all of it: Budget period Начало/Конец and the
+Transactions filter's С/По each collapsed into one `DateRangeField`;
+Debts/Goals "Срок" and the Transaction/contribution "Дата" became
+`DateField`; every money field became `AmountField` (Accounts/Debts
+wire `currencyCode` to their own sibling "Валюта" field); the
+Budget page's inline envelope-allocation input kept its bespoke
+table-cell styling but gained the same formatting via the low-level
+helpers directly. Every existing test that touched a swapped native
+input needed rewriting (date-picker clicks instead of
+`fireEvent.change`, label-based queries instead of role-based ones
+now that amount fields are `type="text"` not `type="number"`) - done
+directly, since it required knowing exactly what changed under each
+one; an independent agent then added tests for the genuinely new
+behavior (arrow-key navigation actually wired into real forms, the
+amount prefix following the sibling currency field live). Verified
+against a real `docker compose build kuvert-web` with no auth token,
+same as every batch since the schloss-ui submodule migration.
+
+Fixed via [schloss-ui#41](https://github.com/zudaR107/schloss-ui/pull/41)
+([schloss-ui#40](https://github.com/zudaR107/schloss-ui/issues/40)),
+[schloss-ui#39](https://github.com/zudaR107/schloss-ui/pull/39)
+([schloss-ui#36](https://github.com/zudaR107/schloss-ui/issues/36)/[#37](https://github.com/zudaR107/schloss-ui/issues/37)/[#38](https://github.com/zudaR107/schloss-ui/issues/38)),
+and [kuvert#149](https://github.com/zudaR107/kuvert/pull/149)
+([kuvert#146](https://github.com/zudaR107/kuvert/issues/146)/[#147](https://github.com/zudaR107/kuvert/issues/147)/[#148](https://github.com/zudaR107/kuvert/issues/148)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

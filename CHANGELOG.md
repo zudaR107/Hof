@@ -249,3 +249,13 @@ submodule's own `CHANGELOG.md` for that).
   and the list endpoints always filtered it out, so archived items
   weren't even listable. Added `?archived=true` listing, a restore
   endpoint, and an "Активные/Архивные" tab on both pages.
+- Bumped schloss-ui and kuvert together: added `DateField`/
+  `DateRangeField` (a custom click-to-pick calendar replacing every
+  native `type="date"` input app-wide), `NumberField`/`AmountField`
+  (thousand-space formatting while typing, an existing "0" gets
+  replaced instead of prepended-to, and the amount prefix now
+  follows the currency actually selected instead of a hardcoded ₽),
+  and `handleArrowFieldNavigation` (Up/Down move between form fields
+  instead of driving a number input's native spinner). Found and
+  fixed a caret-position bug in schloss-ui along the way: typing a
+  decimal point mis-anchored the cursor, so "10.50" posted as "1050".
