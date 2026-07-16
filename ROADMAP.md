@@ -1283,6 +1283,34 @@ Fixed via [schloss-ui#41](https://github.com/zudaR107/schloss-ui/pull/41)
 and [kuvert#149](https://github.com/zudaR107/kuvert/pull/149)
 ([kuvert#146](https://github.com/zudaR107/kuvert/issues/146)/[#147](https://github.com/zudaR107/kuvert/issues/147)/[#148](https://github.com/zudaR107/kuvert/issues/148)).
 
+## Calendar popover position, allocation editor polish (2026-07-16)
+
+Immediate follow-up from the same conversation, once the user actually
+tried the new fields: a screenshot showed a "Период" field's calendar
+opening far above the trigger, overlapping unrelated content near the
+top of the modal, instead of appearing right next to the field. Root
+cause: `CalendarPopover` decided whether it "fits below" from a
+hardcoded height guess (`ESTIMATED_POPOVER_HEIGHT = 340`), then flipped
+to open above if not - whenever that guess didn't match the real
+rendered height, the popover ended up visually disconnected from its
+field entirely. Fixed by always opening below first, then measuring the
+*actual* rendered height in a second layout effect and nudging up only
+the minimum amount needed to stay on-screen if it genuinely overflows -
+it now always stays anchored close to the trigger.
+
+Second, unrelated ask in the same message: the Budget page's inline
+"Выделено" editor "выглядит очень просто и некрасиво" (looks plain/
+ugly). It had an always-on accent border with no focus ring, no
+currency context, and a width that felt cramped once amounts became
+thousand-space-grouped. Restyled to match `Field`'s actual visual
+language used everywhere else in the app: a ₽ prefix, the same
+focus-ring `box-shadow`, matching border radius, more width.
+
+Fixed via [schloss-ui#43](https://github.com/zudaR107/schloss-ui/pull/43)
+([schloss-ui#42](https://github.com/zudaR107/schloss-ui/issues/42))
+and [kuvert#151](https://github.com/zudaR107/kuvert/pull/151)
+([kuvert#150](https://github.com/zudaR107/kuvert/issues/150)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

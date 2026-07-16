@@ -259,3 +259,12 @@ submodule's own `CHANGELOG.md` for that).
   instead of driving a number input's native spinner). Found and
   fixed a caret-position bug in schloss-ui along the way: typing a
   decimal point mis-anchored the cursor, so "10.50" posted as "1050".
+- Bumped schloss-ui and kuvert once more, from user feedback with a
+  screenshot: a "Период" field's calendar could open far above the
+  trigger, disconnected from the field, instead of right next to
+  it - the popover's "does it fit below" guess used a hardcoded
+  height estimate that didn't match reality. Now measures the real
+  rendered height and only nudges up the minimum amount needed to
+  stay on-screen. Also restyled the Budget page's inline "Выделено"
+  editor (plain/flat before - always-on accent border, no focus
+  ring, no currency context) to match the rest of the app's fields.
