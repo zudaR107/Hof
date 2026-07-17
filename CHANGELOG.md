@@ -292,3 +292,11 @@ submodule's own `CHANGELOG.md` for that).
   like "0 ₽" rendered as a stretched, mostly-empty pill. The fixed
   width now only applies once actually editing; while idle the
   display button sizes the pill to its own content again.
+- Bumped schlussel, kuvert, and schloss together: added a single
+  unified account settings page (password change, delete account) at
+  schlussel's `/account`, and repointed every service's header
+  settings button at it instead of a local settings page - kuvert's
+  used to (wrongly) open its own currency preferences, and schloss
+  never wired up a settings button at all. Per-service settings stay
+  reachable from each service's own navigation; the header's gear
+  icon is now reserved platform-wide for this one page.

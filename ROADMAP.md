@@ -1389,6 +1389,60 @@ editing size at the moment it's actually needed.
 Fixed via [kuvert#159](https://github.com/zudaR107/kuvert/pull/159)
 ([kuvert#158](https://github.com/zudaR107/kuvert/issues/158)).
 
+## Unified account settings across the platform (2026-07-17)
+
+There was single sign-on (schlussel issues one JWT every service trusts)
+but no single *account* - each service's header settings button opened
+its own local settings page, and kuvert's actually did that: clicking
+"Настройки" in the header landed on kuvert's own currency-preference
+page, not anything resembling an account page. Nowhere on the platform
+could a user change their password or delete their account at all.
+
+Asked to design and fix this properly, then "fix the system" for every
+future service, not just patch kuvert. Split three ways:
+
+- **schlussel** gained the one and only place these things should ever
+  live: two new endpoints (`PATCH /auth/password`, `DELETE /auth/account`,
+  both Bearer-authenticated, both re-verify the real current password
+  before acting) and a new hosted page, `/account` - profile display,
+  change-password form, delete-account danger zone. It bootstraps its own
+  session exactly like the login page already does (a silent
+  `POST /auth/refresh` check, falling back to a PKCE round-trip through
+  `/login` when there's no existing session), and offers an optional
+  "back to app" link reusing the same `return_to` open-redirect allowlist
+  the login/logout pages already guard with. A password change
+  invalidates every other refresh-token session on every service at once
+  (not just this browser's) - the standard "someone else might have had
+  this password" response - while re-establishing the browser that just
+  made the change so the account page itself doesn't get logged out by
+  its own request.
+- **kuvert**'s header settings button now points there instead of its
+  local `/settings` route, via a new `buildSchluesselAccountUrl` helper -
+  same shape as the existing login/logout redirect helpers, just a plain
+  link with a `return_to`, no PKCE needed since nothing hands a token
+  back across the origin boundary. kuvert's own `/settings` page
+  (currency preference) is untouched and still reachable from the
+  sidebar - only the header's gear icon changed destination.
+- **schloss** never wired an `onSettings` callback on its header at all,
+  so the gear icon never even rendered there. Gained the same
+  `buildSchluesselAccountUrl` helper and is now wired up identically to
+  kuvert - the first genuinely new behavior this change adds anywhere,
+  not just a redirect fix.
+
+The contract for every future service is now written down in schlussel's
+own README: copy the three-line `buildSchluesselAccountUrl` helper, wire
+it as the header's `onSettings`, and keep any real per-service settings
+reachable from the service's own navigation instead - the header's gear
+icon is reserved for the platform-wide page from here on.
+
+Fixed via [schlussel#90](https://github.com/zudaR107/schlussel/pull/90)
+([schlussel#88](https://github.com/zudaR107/schlussel/issues/88),
+[schlussel#89](https://github.com/zudaR107/schlussel/issues/89)),
+[kuvert#161](https://github.com/zudaR107/kuvert/pull/161)
+([kuvert#160](https://github.com/zudaR107/kuvert/issues/160)), and
+[schloss#94](https://github.com/zudaR107/schloss/pull/94)
+([schloss#93](https://github.com/zudaR107/schloss/issues/93)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
