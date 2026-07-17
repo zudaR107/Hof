@@ -1443,6 +1443,62 @@ Fixed via [schlussel#90](https://github.com/zudaR107/schlussel/pull/90)
 [schloss#94](https://github.com/zudaR107/schloss/pull/94)
 ([schloss#93](https://github.com/zudaR107/schloss/issues/93)).
 
+## Avatar as settings entry, shared theme toggle, richer account settings (2026-07-17)
+
+Follow-up to the unified account settings work: the header's gear icon is
+gone - clicking the **avatar** opens the same account page instead (a
+second, redundant entry point for kuvert specifically: its sidebar
+identity block does the same thing). Also asked to standardize why
+schlussel's and kuvert's headers looked different (theme control
+presence/style), and to flesh out the account page with three concrete
+things: an editable display name, a "Выйти на всех устройствах" button,
+and a list of active sessions with per-session revoke.
+
+- **schloss-ui**: `Header`'s settings `HeaderIconButton` is gone; the
+  avatar itself becomes a real button (`aria-label="Настройки аккаунта"`)
+  when both `user` and `onSettings` are given. `lib/theme.ts` (`Theme`/
+  `THEMES`/`getStoredTheme`/`applyTheme`) moved here verbatim - it was
+  already byte-identical across schloss, kuvert, and schlussel. New
+  `ThemeToggle` component (schloss's existing dropdown design - pick a
+  theme directly, not kuvert's blind single-click cycle) with a `trigger`
+  render prop and `align` prop, so it adapts to a header's `rightSlot` or
+  a sidebar row without forcing one visual everywhere.
+- **schlussel**: three new account-settings endpoints - `PATCH
+  /auth/name`, `GET /auth/sessions` (device/IP per session, flags the
+  caller's own current one), `DELETE /auth/sessions/:id` (revoke one),
+  and `DELETE /auth/sessions` (revoke all - unlike a password change,
+  this does *not* re-establish the caller's own session; "everywhere"
+  means everywhere). `refresh_tokens` gained nullable `user_agent`/
+  `ip_address` columns, captured by the shared `establishSession()`
+  helper every login/refresh path already funnels through.
+  `AccountPage`'s profile card is now an editable name form; a new
+  sessions card lists devices with per-row revoke and the bulk logout
+  button. schlussel's own header also gets a theme toggle for the first
+  time. An independent test agent, writing the sessions-card tests from
+  spec alone, caught a real bug along the way: a failed session-list
+  fetch never cleared the loading flag, so "Загрузка…" stayed on screen
+  forever next to the error banner - fixed by tracking loading
+  separately from the list itself, cleared in both branches.
+- **kuvert**: the sidebar's user-identity block now also opens the
+  account page when clicked. Its theme control swapped from the local
+  cycle-button to the shared `ThemeToggle`, styled via the `trigger` prop
+  to match the sidebar's own row look; the now-redundant local
+  `lib/theme.ts` was removed.
+- **schloss**: adopted the shared `ThemeToggle`/`theme.ts`, removing its
+  own now-redundant local copies.
+
+Fixed via [schloss-ui#46](https://github.com/zudaR107/schloss-ui/pull/46)
+([schloss-ui#44](https://github.com/zudaR107/schloss-ui/issues/44),
+[schloss-ui#45](https://github.com/zudaR107/schloss-ui/issues/45)),
+[schlussel#93](https://github.com/zudaR107/schlussel/pull/93)
+([schlussel#91](https://github.com/zudaR107/schlussel/issues/91),
+[schlussel#92](https://github.com/zudaR107/schlussel/issues/92)),
+[kuvert#164](https://github.com/zudaR107/kuvert/pull/164)
+([kuvert#162](https://github.com/zudaR107/kuvert/issues/162),
+[kuvert#163](https://github.com/zudaR107/kuvert/issues/163)), and
+[schloss#96](https://github.com/zudaR107/schloss/pull/96)
+([schloss#95](https://github.com/zudaR107/schloss/issues/95)).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not

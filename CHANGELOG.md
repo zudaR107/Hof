@@ -300,3 +300,14 @@ submodule's own `CHANGELOG.md` for that).
   never wired up a settings button at all. Per-service settings stay
   reachable from each service's own navigation; the header's gear
   icon is now reserved platform-wide for this one page.
+- Bumped schloss-ui, schlussel, kuvert, and schloss together: the
+  header's settings gear icon is gone - the avatar itself opens
+  account settings now (kuvert's sidebar identity block does too, a
+  second entry point). Moved the already-triplicated `theme.ts` into
+  schloss-ui along with a new shared `ThemeToggle` dropdown (kuvert's
+  sidebar swapped its blind cycle-button for it; schlussel's header
+  gained a theme control for the first time). Account settings grew
+  an editable display name, an active-sessions list with per-session
+  revoke, and a "Выйти на всех устройствах" button - and fixed a bug
+  an independent test agent caught along the way, where a failed
+  session-list fetch left the loading indicator stuck on forever.
